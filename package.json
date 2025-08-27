@@ -17,7 +17,11 @@
     "lint:fix": "eslint src/ cli/ tests/ --fix",
     "format": "prettier --write src/ cli/ tests/ docs/",
     "format:check": "prettier --check src/ cli/ tests/ docs/",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "macos": "cd macos && npm run dev",
+    "macos:build": "cd macos && npm run build:mac",
+    "macos:install": "cd macos && npm install",
+    "macos:dist": "cd macos && npm run dist"
   },
   "keywords": [
     "slack",
@@ -58,10 +62,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/slack-status-scheduler.git"
+    "url": "https://github.com/thesammykins/slackstatus.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/slack-status-scheduler/issues"
+    "url": "https://github.com/thesammykins/slackstatus/issues"
   },
-  "homepage": "https://github.com/your-username/slack-status-scheduler#readme"
+  "homepage": "https://github.com/thesammykins/slackstatus#readme"
 }

@@ -1,0 +1,104 @@
+{
+  "name": "slack-status-macos",
+  "version": "1.0.0",
+  "description": "Slack Status Scheduler - macOS Menu Bar App",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "test-app": "electron . --test",
+    "build-icons": "node scripts/build-icons.js",
+    "prebuild": "npm run build-icons",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "dist": "electron-builder --publish=never",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create-icons": "node scripts/create-icon.js",
+    "setup-icons": "npm run build-icons",
+    "validate": "node validate-build.js",
+    "validate:verbose": "node validate-build.js --verbose",
+    "lint": "echo \"Linting would go here\"",
+    "clean": "rm -rf dist/ node_modules/.cache/ assets/icon.icns",
+    "dev:verbose": "DEBUG=* electron . --dev"
+  },
+  "keywords": [
+    "slack",
+    "status",
+    "scheduler",
+    "macos",
+    "menubar",
+    "electron"
+  ],
+  "author": "Sammy <sammy@example.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "@electron/notarize": "^2.2.1"
+  },
+  "dependencies": {
+    "keytar": "^7.9.0",
+    "menubar": "^9.3.0"
+  },
+  "build": {
+    "appId": "com.slackstatus.scheduler",
+    "productName": "Slack Status Scheduler",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "assets/icon.icns"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "hardenedRuntime": true,
+      "entitlements": "assets/entitlements.mac.plist",
+      "entitlementsInherit": "assets/entitlements.mac.plist",
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "Slack Status Scheduler",
+      "icon": "assets/icon.icns",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "afterSign": "scripts/notarize.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thesammykins/slackstatus.git"
+  }
+}

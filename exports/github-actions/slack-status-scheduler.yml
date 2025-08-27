@@ -45,8 +45,7 @@ jobs:
       - name: Install Slack Status Scheduler
         run: |
           # Clone the slack status scheduler
-          # TODO: Replace with your actual repository URL
-          git clone https://github.com/YOUR_USERNAME/slack-status-scheduler.git scheduler
+          git clone https://github.com/thesammykins/slackstatus.git scheduler
           cd scheduler
           npm ci --only=production
 
@@ -111,8 +110,7 @@ jobs:
           echo "4. Permission issues - ensure the token has proper scopes"
           echo ""
           echo "Check the logs above for specific error details."
-          echo "For troubleshooting help, see: https://github.com/YOUR_USERNAME/slack-status-scheduler/blob/main/docs/troubleshooting.md"
-          echo "TODO: Update this URL to point to your actual repository"
+          echo "For troubleshooting help, see: https://github.com/thesammykins/slackstatus/blob/main/docs/troubleshooting.md"
 
           # Exit with error code to mark the workflow as failed
           exit 1

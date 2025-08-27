@@ -16,21 +16,25 @@ A native macOS menu bar app and Node.js runner for automatically scheduling Slac
 
 ### Prerequisites
 
-- macOS 12+ (for the menu bar app)
+- macOS 10.15+ (for the menu bar app)
 - Node.js 18+ (for the headless runner and CLI)
 - A Slack workspace where you have permission to set your status
 
 ### Installation
 
-1. **Download the macOS App** (coming soon)
-   - Download the latest release from the [Releases page](https://github.com/your-username/slack-status-scheduler/releases)
-   - Drag to Applications folder
-   - Launch and follow the setup wizard
-
-2. **Or use the CLI/Runner directly**
+1. **macOS Menu Bar App** (Recommended)
    ```bash
-   git clone https://github.com/your-username/slack-status-scheduler.git
-   cd slack-status-scheduler
+   git clone https://github.com/thesammykins/slackstatus.git
+   cd slackstatus/macos
+   npm install
+   npm run dev  # For development
+   # npm run build:mac  # For distribution
+   ```
+
+2. **CLI/Runner Only**
+   ```bash
+   git clone https://github.com/thesammykins/slackstatus.git
+   cd slackstatus
    npm install
    ```
 
@@ -157,17 +161,18 @@ Both options are generated automatically by the macOS app with step-by-step inst
 slack_status/
 ├── src/                    # Core scheduling logic
 ├── cli/                    # Command-line interface
-├── macos/                  # macOS app (Swift/SwiftUI)
+├── macos/                  # macOS app (Electron)
 ├── docs/                   # Documentation
 ├── examples/               # Example configs and usage
+├── exports/                # Export configurations
 └── tests/                  # Test suites
 ```
 
 ### Setup Development Environment
 
 ```bash
-git clone https://github.com/your-username/slack-status-scheduler.git
-cd slack-status-scheduler
+git clone https://github.com/thesammykins/slackstatus.git
+cd slackstatus
 npm install
 
 # Run tests
@@ -221,10 +226,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- 🐛 [Report bugs](https://github.com/your-username/slack-status-scheduler/issues)
-- 💡 [Request features](https://github.com/your-username/slack-status-scheduler/issues)
+- 🐛 [Report bugs](https://github.com/thesammykins/slackstatus/issues)
+- 💡 [Request features](https://github.com/thesammykins/slackstatus/issues)
 - 📖 [Read the docs](docs/)
-- 💬 [Discussions](https://github.com/your-username/slack-status-scheduler/discussions)
+- 💬 [Discussions](https://github.com/thesammykins/slackstatus/discussions)
 
 ---
 

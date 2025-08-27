@@ -31,8 +31,8 @@ This project adheres to a code of conduct that we expect all contributors to fol
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/slack-status-scheduler.git
-   cd slack-status-scheduler
+   git clone https://github.com/thesammykins/slackstatus.git
+   cd slackstatus
    ```
 3. **Install dependencies**:
    ```bash
@@ -374,9 +374,9 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ## Getting Help
 
-- **Questions**: Open a [Discussion](https://github.com/your-username/slack-status-scheduler/discussions)
-- **Bugs**: Create an [Issue](https://github.com/your-username/slack-status-scheduler/issues)
-- **Feature Requests**: Create an [Issue](https://github.com/your-username/slack-status-scheduler/issues) with the "enhancement" label
+- **Questions**: Open a [Discussion](https://github.com/thesammykins/slackstatus/discussions)
+- **Bugs**: Create an [Issue](https://github.com/thesammykins/slackstatus/issues)
+- **Feature Requests**: Create an [Issue](https://github.com/thesammykins/slackstatus/issues) with the "enhancement" label
 
 ## Recognition
 

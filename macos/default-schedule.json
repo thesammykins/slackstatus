@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "timezone": "America/Los_Angeles",
+  "options": {
+    "clear_when_no_match": false
+  },
+  "rules": [
+    {
+      "id": "morning-focus",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "09:00",
+      "status": {
+        "text": "Deep work time",
+        "emoji": "🧠",
+        "expire_hour": 11
+      },
+      "enabled": true
+    },
+    {
+      "id": "lunch-break",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "12:00",
+      "status": {
+        "text": "Lunch break",
+        "emoji": "🍽️",
+        "expire_hour": 13
+      },
+      "enabled": true
+    },
+    {
+      "id": "afternoon-meetings",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "14:00",
+      "status": {
+        "text": "Available for meetings",
+        "emoji": "📅",
+        "expire_hour": 17
+      },
+      "enabled": true
+    },
+    {
+      "id": "weekend-offline",
+      "type": "weekly",
+      "days": ["sat", "sun"],
+      "time": "10:00",
+      "status": {
+        "text": "Enjoying the weekend",
+        "emoji": "🌴",
+        "expire_hour": 23
+      },
+      "enabled": true
+    }
+  ]
+}

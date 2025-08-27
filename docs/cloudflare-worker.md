@@ -58,8 +58,8 @@ mkdir slack-status-worker
 cd slack-status-worker
 
 # Copy the worker files from the template
-curl -o worker.js https://raw.githubusercontent.com/YOUR_USERNAME/slack-status-scheduler/main/exports/cloudflare-worker/worker.js
-curl -o wrangler.toml https://raw.githubusercontent.com/YOUR_USERNAME/slack-status-scheduler/main/exports/cloudflare-worker/wrangler.toml
+curl -o worker.js https://raw.githubusercontent.com/thesammykins/slackstatus/main/exports/cloudflare-worker/worker.js
+curl -o wrangler.toml https://raw.githubusercontent.com/thesammykins/slackstatus/main/exports/cloudflare-worker/wrangler.toml
 
 # Initialize npm package
 npm init -y
@@ -69,8 +69,8 @@ npm init -y
 
 ```bash
 # Clone the main repository
-git clone https://github.com/YOUR_USERNAME/slack-status-scheduler.git
-cd slack-status-scheduler/exports/cloudflare-worker
+git clone https://github.com/thesammykins/slackstatus.git
+cd slackstatus/exports/cloudflare-worker
 
 # Copy to a new directory for your deployment
 cp -r . ~/slack-status-worker

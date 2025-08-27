@@ -1,0 +1,21 @@
+# Icon Placeholder
+
+This directory should contain the following icon files for the macOS app:
+
+- iconTemplate.png (16x16, template icon for menu bar)
+- iconTemplate@2x.png (32x32, retina version)
+- icon.icns (macOS application icon bundle)
+- dmg-background.png (DMG installer background)
+
+For now, you can:
+1. Use any 16x16 PNG as iconTemplate.png
+2. Create a simple black/white icon that will work as a template icon
+3. Generate icon.icns using an icon generator tool
+
+The template icon should be black with transparency and will automatically
+adapt to the system's menu bar appearance (light/dark mode).
+
+Example tools for creating icons:
+- https://iconverticons.com/online/
+- https://cloudconvert.com/png-to-icns
+- macOS built-in iconutil command

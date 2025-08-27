@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slack Status Scheduler</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header with navigation -->
+        <header class="header">
+            <h1 class="app-title">Slack Status Scheduler</h1>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-tab" data-tab="schedule">Schedule</button>
+                <button class="nav-tab" data-tab="preview">Preview</button>
+                <button class="nav-tab" data-tab="settings">Settings</button>
+                <button class="nav-tab" data-tab="logs">Logs</button>
+            </nav>
+        </header>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="dashboard">
+                    <div class="status-card">
+                        <h3>Current Status</h3>
+                        <div id="current-status" class="status-display">
+                            <span class="status-emoji">😴</span>
+                            <span class="status-text">Not scheduled</span>
+                        </div>
+                        <div class="status-actions">
+                            <button id="run-now-btn" class="btn btn-primary">Run Now</button>
+                            <button id="preview-now-btn" class="btn btn-secondary">Preview</button>
+                        </div>
+                    </div>
+
+                    <div class="upcoming-card">
+                        <h3>Upcoming Changes</h3>
+                        <div id="upcoming-list" class="upcoming-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button id="export-github-btn" class="btn btn-outline">Export to GitHub Actions</button>
+                            <button id="export-cloudflare-btn" class="btn btn-outline">Export to Cloudflare Worker</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Editor Tab -->
+            <div id="schedule-tab" class="tab-content">
+                <div class="schedule-editor">
+                    <div class="schedule-toolbar">
+                        <button id="load-schedule-btn" class="btn btn-secondary">Load Schedule</button>
+                        <button id="save-schedule-btn" class="btn btn-primary">Save Schedule</button>
+                        <button id="validate-schedule-btn" class="btn btn-outline">Validate</button>
+                        <button id="add-rule-btn" class="btn btn-success">Add Rule</button>
+                    </div>
+
+                    <div class="schedule-config">
+                        <div class="config-section">
+                            <label for="schedule-timezone">Timezone:</label>
+                            <select id="schedule-timezone" class="form-control">
+                                <option value="America/Los_Angeles">America/Los_Angeles</option>
+                                <option value="America/New_York">America/New_York</option>
+                                <option value="America/Chicago">America/Chicago</option>
+                                <option value="America/Denver">America/Denver</option>
+                                <option value="Europe/London">Europe/London</option>
+                                <option value="Europe/Paris">Europe/Paris</option>
+                                <option value="Asia/Tokyo">Asia/Tokyo</option>
+                                <option value="UTC">UTC</option>
+                            </select>
+                        </div>
+
+                        <div class="config-section">
+                            <label>
+                                <input type="checkbox" id="clear-when-no-match"> Clear status when no rules match
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="rules-container">
+                        <h3>Schedule Rules</h3>
+                        <div id="rules-list" class="rules-list">
+                            <!-- Rules will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="schedule-json">
+                        <h3>Raw JSON</h3>
+                        <textarea id="schedule-json-editor" class="json-editor" rows="15" placeholder="Your schedule JSON will appear here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Tab -->
+            <div id="preview-tab" class="tab-content">
+                <div class="preview-section">
+                    <div class="preview-controls">
+                        <label for="preview-date">Preview Date:</label>
+                        <input type="date" id="preview-date" class="form-control">
+                        <button id="preview-btn" class="btn btn-primary">Generate Preview</button>
+                    </div>
+
+                    <div class="preview-results">
+                        <h3>Preview Results</h3>
+                        <div id="preview-output" class="preview-output">
+                            <!-- Preview results will appear here -->
+                        </div>
+                    </div>
+
+                    <div class="upcoming-preview">
+                        <h3>Next 7 Days</h3>
+                        <div class="preview-controls">
+                            <label for="preview-days">Days to preview:</label>
+                            <input type="number" id="preview-days" class="form-control" value="7" min="1" max="30">
+                            <button id="upcoming-preview-btn" class="btn btn-secondary">Refresh</button>
+                        </div>
+                        <div id="upcoming-preview-output" class="upcoming-preview-output">
+                            <!-- Upcoming changes will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-section">
+                    <h3></h3>Slack Configuration</h3>
+                    <div class="setting-group">
+                        <label for="slack-token">Slack Token:</label>
+                        <div class="token-input-group">
+                            <input type="password" id="slack-token" class="form-control" placeholder="xoxp-your-slack-token-here">
+                            <button id="toggle-token-visibility" class="btn btn-outline">👁️</button>
+                        </div>
+                        <small class="help-text">
+                            Your token is stored securely in macOS Keychain.
+                            <a href="#" id="token-help-link">How to get a Slack token</a>
+                        </small>
+                        <div class="token-actions">
+                            <button id="save-token-btn" class="btn btn-primary">Save Token</button>
+                            <button id="test-token-btn" class="btn btn-secondary">Test Connection</button>
+                            <button id="clear-token-btn" class="btn btn-danger">Clear Token</button>
+                        </div>
+                    </div>
+
+                    <h3>App Settings</h3>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="start-at-login"> Start at login
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="enable-notifications"> Enable notifications
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label for="log-level">Log Level:</label>
+                        <select id="log-level" class="form-control">
+                            <option value="error">Error</option>
+                            <option value="warn">Warning</option>
+                            <option value="info" selected>Info</option>
+                            <option value="debug">Debug</option>
+                        </select>
+                    </div>
+
+                    <h3>Export Settings</h3>
+                    <div class="setting-group">
+                        <p>Export your schedule for serverless deployment:</p>
+                        <div class="export-buttons">
+                            <button id="settings-export-github-btn" class="btn btn-outline">Export GitHub Actions</button>
+                            <button id="settings-export-cloudflare-btn" class="btn btn-outline">Export Cloudflare Worker</button>
+                        </div>
+                    </div>
+
+                    <h3>About</h3>
+                    <div class="setting-group">
+                        <p>Slack Status Scheduler v1.0.0</p>
+                        <p>Built with ❤️ for productivity</p>
+                        <div class="about-links">
+                            <a href="#" id="documentation-link">Documentation</a> |
+                            <a href="#" id="github-link">GitHub</a> |
+                            <a href="#" id="report-issue-link">Report Issue</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs-tab" class="tab-content">
+                <div class="logs-section">
+                    <div class="logs-toolbar">
+                        <button id="clear-logs-btn" class="btn btn-outline">Clear Logs</button>
+                        <button id="export-logs-btn" class="btn btn-secondary">Export Logs</button>
+                        <button id="refresh-logs-btn" class="btn btn-secondary">Refresh</button>
+                        <select id="logs-filter" class="form-control">
+                            <option value="all">All Logs</option>
+                            <option value="error">Errors Only</option>
+                            <option value="warn">Warnings Only</option>
+                            <option value="info">Info Only</option>
+                            <option value="debug">Debug Only</option>
+                        </select>
+                    </div>
+                    <div class="logs-container">
+                        <div id="logs-output" class="logs-output">
+                            <!-- Logs will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status bar -->
+        <footer class="status-bar">
+            <span id="status-text">Ready</span>
+            <span id="connection-status" class="connection-status disconnected">●</span>
+        </footer>
+    </div>
+
+    <!-- Rule Editor Modal -->
+    <div id="rule-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="rule-modal-title">Add New Rule</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="rule-form">
+                    <div class="form-group">
+                        <label for="rule-id">Rule ID:</label>
+                        <input type="text" id="rule-id" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-type">Type:</label>
+                        <select id="rule-type" class="form-control" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="every-n-days">Every N Days</option>
+                            <option value="dates">Specific Dates</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="rule-days-group">
+                        <label>Days:</label>
+                        <div class="days-checkboxes">
+                            <label><input type="checkbox" value="mon"> Mon</label>
+                            <label><input type="checkbox" value="tue"> Tue</label>
+                            <label><input type="checkbox" value="wed"> Wed</label>
+                            <label><input type="checkbox" value="thu"> Thu</label>
+                            <label><input type="checkbox" value="fri"> Fri</label>
+                            <label><input type="checkbox" value="sat"> Sat</label>
+                            <label><input type="checkbox" value="sun"> Sun</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="rule-interval-group">
+                        <label for="rule-interval">Interval (days):</label>
+                        <input type="number" id="rule-interval" class="form-control" min="1">
+                    </div>
+
+                    <div class="form-group" id="rule-dates-group">
+                        <label for="rule-dates">Dates (comma-separated YYYY-MM-DD):</label>
+                        <input type="text" id="rule-dates" class="form-control" placeholder="2024-01-15, 2024-02-20">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-time">Time:</label>
+                        <input type="time" id="rule-time" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-status-text">Status Text:</label>
+                        <input type="text" id="rule-status-text" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-status-emoji">Status Emoji:</label>
+                        <input type="text" id="rule-status-emoji" class="form-control" placeholder="🧠 or :focus:">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule-expire-hour">Expire Hour (optional):</label>
+                        <input type="number" id="rule-expire-hour" class="form-control" min="0" max="23">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="rule-enabled"> Enabled
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="rule-cancel-btn">Cancel</button>
+                <button type="submit" form="rule-form" class="btn btn-primary" id="rule-save-btn">Save Rule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -45,28 +45,26 @@ If you already have a Slack app with the right permissions, just copy the User O
 2. Click **"Fork"** to create your own copy
 3. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/slack-status-scheduler.git
-   cd slack-status-scheduler
+   git clone https://github.com/thesammykins/slackstatus.git
+   cd slackstatus
    ```
 
 ### Option B: Create a New Repository
 
 1. Create a new repository on GitHub
 2. Clone it locally and add the workflow file:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/your-schedule-repo.git
-   cd your-schedule-repo
+   1. **Clone your fork and set up the workflow**:
+      ```bash
+      git clone https://github.com/YOUR_USERNAME/your-schedule-repo.git
+      cd your-schedule-repo
    
-   # Create the workflow directory
-   mkdir -p .github/workflows
+      # Create the workflow directory
+      mkdir -p .github/workflows
    
-   # Copy the workflow file from the exports directory
-   curl -o .github/workflows/slack-status-scheduler.yml \
-     https://raw.githubusercontent.com/YOUR_USERNAME/slack-status-scheduler/main/exports/github-actions/slack-status-scheduler.yml
-   
-   # IMPORTANT: Edit the workflow file to update the repository URL
-   # Replace YOUR_USERNAME with your actual GitHub username in line 49
-   ```
+      # Copy the workflow file from the exports directory
+      curl -o .github/workflows/slack-status-scheduler.yml \
+        https://raw.githubusercontent.com/thesammykins/slackstatus/main/exports/github-actions/slack-status-scheduler.yml
+      ```
 
 ## Step 3: Configure Your Schedule
 
@@ -158,7 +156,7 @@ on:
 
 ```bash
 # Install the scheduler locally
-git clone https://github.com/YOUR_USERNAME/slack-status-scheduler.git temp-scheduler
+git clone https://github.com/thesammykins/slackstatus.git temp-scheduler
 cd temp-scheduler
 npm install
 
@@ -181,11 +179,7 @@ SLACK_TOKEN=your-token node cli/index.js run ../schedule.json --dry-run
    git push origin main
    ```
 
-2. **First, edit the workflow file**:
-   - Open `.github/workflows/slack-status-scheduler.yml`
-   - On line 49, replace `YOUR_USERNAME` with your actual GitHub username
-   - On line 114, replace `YOUR_USERNAME` with your actual GitHub username
-   - Commit and push this change
+2. **The workflow file is ready to use** (URLs are already configured for the main repository)
 3. Go to your repository → **Actions** tab
 4. Click **"Slack Status Scheduler"** workflow
 5. Click **"Run workflow"** dropdown

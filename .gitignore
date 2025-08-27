@@ -172,3 +172,6 @@ exports/user-generated/
 
 # Husky
 .husky/_/
+
+#Internal Docs
+/internaldocs/*
