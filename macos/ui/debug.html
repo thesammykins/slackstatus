@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Debug - Slack Status Scheduler</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .debug-info {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .debug-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .debug-button:hover {
+            background: #0056b3;
+        }
+        .working-indicator {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .working-indicator.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .working-indicator.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Slack Status Scheduler - Tab Debug</h1>
+
+    <div class="debug-info">
+        <strong>Debug Console:</strong> Check browser console (F12) for detailed logs
+    </div>
+
+    <div class="working-indicator" id="working-indicator">
+        Testing tab functionality...
+    </div>
+
+    <div>
+        <button class="debug-button" onclick="testBasicTabSwitch()">Test Basic Tab Switch</button>
+        <button class="debug-button" onclick="testAllTabs()">Test All Tabs</button>
+        <button class="debug-button" onclick="inspectElements()">Inspect Elements</button>
+        <button class="debug-button" onclick="resetTabs()">Reset Tabs</button>
+    </div>
+
+    <div id="app">
+        <!-- Header with navigation -->
+        <header class="header">
+            <h1 class="app</h1></div>-title">Slack Status Scheduler</h1>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+                <button class="nav-tab" data-tab="schedule">Schedule</button>
+                <button class="nav-tab" data-tab="preview">Preview</button>
+                <button class="nav-tab" data-tab="settings">Settings</button>
+                <button class="nav-tab" data-tab="logs">Logs</button>
+            </nav>
+        </header>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="dashboard">
+                    <h2>Dashboard Tab</h2>
+                    <p>This is the dashboard content. If you can see this and the tab is highlighted, dashboard tab is working.</p>
+                </div>
+            </div>
+
+            <!-- Schedule Editor Tab -->
+            <div id="schedule-tab" class="tab-content">
+                <div class="schedule-editor">
+                    <h2>Schedule Tab</h2>
+                    <p>This is the schedule content. If you can see this and the tab is highlighted, schedule tab is working.</p>
+                </div>
+            </div>
+
+            <!-- Preview Tab -->
+            <div id="preview-tab" class="tab-content">
+                <div class="preview-section">
+                    <h2>Preview Tab</h2>
+                    <p>This is the preview content. If you can see this and the tab is highlighted, preview tab is working.</p>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-section">
+                    <h2>Settings Tab</h2>
+                    <p>This is the settings content. If you can see this and the tab is highlighted, settings tab is working.</p>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs-tab" class="tab-content">
+                <div class="logs-section">
+                    <h2>Logs Tab</h2>
+                    <p>This is the logs content. If you can see this and the tab is highlighted, logs tab is working.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        console.log('=== Debug Script Starting ===');
+
+        // Mock ipcRenderer for browser environment
+        const ipcRenderer = null;
+
+        // Simple elements object
+        let elements = {};
+
+        // Simple timezone utils
+        const timezoneUtils = {
+            getUserTimezone() {
+                try {
+                    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+                } catch (error) {
+                    return 'UTC';
+                }
+            }
+        };
+
+        function updateWorkingIndicator(message, isSuccess = true) {
+            const indicator = document.getElementById('working-indicator');
+            indicator.textContent = message;
+            indicator.className = `working-indicator ${isSuccess ? 'success' : 'error'}`;
+        }
+
+        function initElements() {
+            console.log('Initializing elements...');
+            elements = {
+                navTabs: document.querySelectorAll('.nav-tab'),
+                tabContents: document.querySelectorAll('.tab-content')
+            };
+
+            console.log('Elements found:');
+            console.log('- Nav tabs:', elements.navTabs.length);
+            console.log('- Tab contents:', elements.tabContents.length);
+
+            if (elements.navTabs.length === 0 || elements.tabContents.length === 0) {
+                updateWorkingIndicator('ERROR: Elements not found!', false);
+                return false;
+            }
+
+            updateWorkingIndicator('Elements found successfully!', true);
+            return true;
+        }
+
+        function setupEventListeners() {
+            console.log('Setting up event listeners...');
+
+            if (!elements.navTabs) {
+                console.error('Elements not initialized!');
+                return false;
+            }
+
+            elements.navTabs.forEach((tab, index) => {
+                console.log(`Adding listener to tab ${index}: ${tab.dataset.tab}`);
+
+                tab.addEventListener('click', (event) => {
+                    console.log('Tab clicked:', tab.dataset.tab);
+                    switchTab(tab.dataset.tab);
+                });
+
+                // Add visual feedback
+                tab.addEventListener('mousedown', () => {
+                    console.log('Mouse down on:', tab.dataset.tab);
+                });
+            });
+
+            updateWorkingIndicator('Event listeners attached successfully!', true);
+            return true;
+        }
+
+        function switchTab(tabName) {
+            console.log('=== switchTab called ===');
+            console.log('Target tab:', tabName);
+
+            if (!elements.navTabs || !elements.tabContents) {
+                console.error('Elements not available!');
+                updateWorkingIndicator('ERROR: Elements not available for tab switch!', false);
+                return;
+            }
+
+            // Update nav tabs
+            console.log('Updating nav tabs...');
+            elements.navTabs.forEach(tab => {
+                const shouldBeActive = tab.dataset.tab === tabName;
+                console.log(`Tab "${tab.dataset.tab}": setting active=${shouldBeActive}`);
+
+                if (shouldBeActive) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Update tab content
+            console.log('Updating tab contents...');
+            elements.tabContents.forEach(content => {
+                const expectedId = `${tabName}-tab`;
+                const shouldBeActive = content.id === expectedId;
+                console.log(`Content "${content.id}": expected="${expectedId}", setting active=${shouldBeActive}`);
+
+                if (shouldBeActive) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+
+            updateWorkingIndicator(`Successfully switched to ${tabName} tab!`, true);
+            console.log('Tab switch completed');
+        }
+
+        // Debug functions
+        function testBasicTabSwitch() {
+            console.log('=== Testing Basic Tab Switch ===');
+            switchTab('schedule');
+        }
+
+        function testAllTabs() {
+            console.log('=== Testing All Tabs ===');
+            const tabs = ['dashboard', 'schedule', 'preview', 'settings', 'logs'];
+            let index = 0;
+
+            function nextTab() {
+                if (index < tabs.length) {
+                    console.log(`Switching to ${tabs[index]}`);
+                    switchTab(tabs[index]);
+                    index++;
+                    setTimeout(nextTab, 1000);
+                } else {
+                    updateWorkingIndicator('All tabs tested successfully!', true);
+                }
+            }
+
+            nextTab();
+        }
+
+        function inspectElements() {
+            console.log('=== Element Inspection ===');
+
+            console.log('Nav tabs:');
+            elements.navTabs.forEach((tab, i) => {
+                console.log(`  ${i}: data-tab="${tab.dataset.tab}", classes="${tab.className}"`);
+            });
+
+            console.log('Tab contents:');
+            elements.tabContents.forEach((content, i) => {
+                console.log(`  ${i}: id="${content.id}", classes="${content.className}"`);
+            });
+
+            updateWorkingIndicator('Element inspection completed - check console', true);
+        }
+
+        function resetTabs() {
+            console.log('=== Resetting Tabs ===');
+            switchTab('dashboard');
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing debug page...');
+
+            if (initElements()) {
+                if (setupEventListeners()) {
+                    updateWorkingIndicator('Debug page initialized successfully! Try clicking tabs.', true);
+                } else {
+                    updateWorkingIndicator('Failed to set up event listeners!', false);
+                }
+            } else {
+                updateWorkingIndicator('Failed to initialize elements!', false);
+            }
+        });
+
+        // Make functions available globally
+        window.testBasicTabSwitch = testBasicTabSwitch;
+        window.testAllTabs = testAllTabs;
+        window.inspectElements = inspectElements;
+        window.resetTabs = resetTabs;
+        window.switchTab = switchTab;
+
+        console.log('Debug script loaded');
+    </script>
+</body>
+</html>

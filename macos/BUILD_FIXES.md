@@ -31,9 +31,9 @@ This document outlines the issues found and fixes applied to resolve the macOS b
 
 **Problem**: Clicking the menubar icon showed both the main app interface and the right-click context menu simultaneously.
 
-**Root Cause**: The menubar library was configured to show the window on both left and right clicks, while also having a context menu set.
+**Root Cause**: When `setContextMenu()` is used on a tray, it interferes with click events, causing both left and right clicks to trigger menus. This is a known Electron limitation documented in issue #5058.
 
-**Fix**: Added `showOnRightClick: false` to the menubar configuration and implemented proper click handling:
+**Fix**: Removed `setContextMenu()` and implemented manual context menu handling using `popUpContextMenu()`:
 
 ```javascript
 mb = menubar({
@@ -48,13 +48,22 @@ mb = menubar({
   },
 });
 
-// Set up proper click handling
+// Create context menu but don't set it with setContextMenu()
+const contextMenu = Menu.buildFromTemplate([
+  { label: 'Open Slack Status Scheduler', click: () => mb.showWindow() },
+  { type: 'separator' },
+  // ... other menu items
+]);
+
+// Handle right-click manually to show context menu
 if (mb.tray) {
   mb.tray.on('right-click', () => {
-    mb.tray.popUpContextMenu();
+    mb.tray.popUpContextMenu(contextMenu);
   });
 }
 ```
+
+**Key Insight**: Using `setContextMenu()` prevents proper click event handling. The solution is to avoid `setContextMenu()` entirely and use `popUpContextMenu()` with manual event handling.
 
 ## Validation
 

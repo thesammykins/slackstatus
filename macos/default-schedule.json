@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "timezone": "America/Los_Angeles",
+  "timezone": "UTC",
   "options": {
     "clear_when_no_match": false
   },

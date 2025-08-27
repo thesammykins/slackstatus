@@ -68,14 +68,7 @@
                         <div class="config-section">
                             <label for="schedule-timezone">Timezone:</label>
                             <select id="schedule-timezone" class="form-control">
-                                <option value="America/Los_Angeles">America/Los_Angeles</option>
-                                <option value="America/New_York">America/New_York</option>
-                                <option value="America/Chicago">America/Chicago</option>
-                                <option value="America/Denver">America/Denver</option>
-                                <option value="Europe/London">Europe/London</option>
-                                <option value="Europe/Paris">Europe/Paris</option>
-                                <option value="Asia/Tokyo">Asia/Tokyo</option>
-                                <option value="UTC">UTC</option>
+                                <!-- Timezone options will be populated dynamically by JavaScript -->
                             </select>
                         </div>
 
@@ -133,7 +126,7 @@
             <!-- Settings Tab -->
             <div id="settings-tab" class="tab-content">
                 <div class="settings-section">
-                    <h3></h3>Slack Configuration</h3>
+                    <h3>Slack Configuration</h3>
                     <div class="setting-group">
                         <label for="slack-token">Slack Token:</label>
                         <div class="token-input-group">
@@ -263,6 +256,8 @@
                     </div>
 
                     <div class="form-group" id="rule-interval-group">
+                        <label for="rule-start-date">Start Date:</label>
+                        <input type="date" id="rule-start-date" class="form-control">
                         <label for="rule-interval">Interval (days):</label>
                         <input type="number" id="rule-interval" class="form-control" min="1">
                     </div>

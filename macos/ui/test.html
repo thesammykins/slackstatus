@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Test</title>
+    <style>
+        .nav-tab {
+            padding: 10px;
+            margin: 5px;
+            background: #f0f0f0;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tab Functionality Test</h1>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-tab" data-tab="schedule">Schedule</button>
+        <button class="nav-tab" data-tab="settings">Settings</button>
+    </div>
+
+    <div id="dashboard-tab" class="tab-content active">
+        <h3>Dashboard Content</h3>
+        <p>This is the dashboard tab.</p>
+    </div>
+
+    <div id="schedule-tab" class="tab-content">
+        <h3>Schedule Content</h3>
+        <p>This is the schedule tab.</p>
+    </div>
+
+    <div id="settings-tab" class="tab-content">
+        <h3>Settings Content</h3>
+        <p>This is the settings tab.</p>
+    </div>
+
+    <script>
+        console.log('Test script loading...');
+
+        // Simple tab switching function
+        function switchTab(tabName) {
+            console.log('Switching to tab:', tabName);
+
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                const isActive = tab.dataset.tab === tabName;
+                console.log(`Tab ${tab.dataset.tab} active:`, isActive);
+                tab.classList.toggle('active', isActive);
+            });
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                const isActive = content.id === `${tabName}-tab`;
+                console.log(`Content ${content.id} active:`, isActive);
+                content.classList.toggle('active', isActive);
+            });
+        }
+
+        // Set up event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up listeners...');
+
+            const navTabs = document.querySelectorAll('.nav-tab');
+            console.log('Found nav tabs:', navTabs.length);
+
+            navTabs.forEach((tab, index) => {
+                console.log(`Setting up tab ${index}:`, tab.dataset.tab);
+                tab.addEventListener('click', function() {
+                    console.log('Tab clicked:', tab.dataset.tab);
+                    switchTab(tab.dataset.tab);
+                });
+            });
+
+            console.log('Event listeners set up complete');
+        });
+    </script>
+</body>
+</html>
