@@ -25,14 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Debug file system
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Contents:"
-          ls -la
-          echo "Looking for package files:"
-          find . -name "package*.json" -type f | head -10
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -67,6 +60,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            macos/package-lock.json
 
       - name: Verify build tools
         run: |
@@ -147,6 +144,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            macos/package-lock.json
 
       - name: Install macOS dependencies
         run: |
@@ -187,6 +188,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
