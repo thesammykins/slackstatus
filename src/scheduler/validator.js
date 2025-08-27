@@ -244,7 +244,8 @@ function validateStatus(status) {
     errors.push('Status emoji must be a string');
   } else if (!isValidEmoji(status.emoji)) {
     errors.push(
-      `Invalid emoji format: ${status.emoji}. Must be Unicode emoji (🙂) or Slack emoji (:smile:) format`
+      `Invalid emoji format: ${status.emoji}. Must be Unicode emoji (🙂) or ` +
+        'Slack emoji (:smile:) format',
     );
   }
 
@@ -287,7 +288,8 @@ function validateOptions(options) {
     const validLogLevels = ['error', 'warn', 'info', 'debug'];
     if (!validLogLevels.includes(options.log_level)) {
       errors.push(
-        `Invalid log_level: ${options.log_level}. Must be one of: ${validLogLevels.join(', ')}`
+        `Invalid log_level: ${options.log_level}. Must be one of: ` +
+          `${validLogLevels.join(', ')}`,
       );
     }
   }
@@ -367,7 +369,8 @@ function isValidEmoji(emoji) {
   }
 
   // Allow Unicode emojis - be permissive since Slack accepts most Unicode
-  // Just check that it's not empty and doesn't start/end with colons (which would be malformed Slack emoji)
+  // Just check that it's not empty and doesn't start/end with colons
+  // (which would be malformed Slack emoji)
   if (emoji.startsWith(':') || emoji.endsWith(':')) {
     return false; // Malformed Slack emoji
   }
@@ -389,7 +392,9 @@ export function quickValidate(schedule) {
     criticalErrors.push('No schedule provided');
   } else {
     if (!schedule.timezone) criticalErrors.push('Missing timezone');
-    if (!schedule.rules?.length) criticalErrors.push('No rules defined');
+    if (!schedule.rules?.length) {
+      criticalErrors.push('No rules defined');
+    }
 
     if (schedule.rules) {
       schedule.rules.forEach((rule, index) => {

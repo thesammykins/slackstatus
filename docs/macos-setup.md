@@ -1,6 +1,7 @@
 # Slack Status Scheduler - macOS Menu Bar App Setup
 
-This guide will help you set up and use the Slack Status Scheduler macOS menu bar app.
+This guide will help you set up and use the Slack Status Scheduler macOS menu
+bar app.
 
 ## Table of Contents
 
@@ -23,7 +24,8 @@ This guide will help you set up and use the Slack Status Scheduler macOS menu ba
 
 ### Option 1: Download Release (Recommended)
 
-1. Download the latest `.dmg` file from the [Releases page](https://github.com/thesammykins/slackstatus/releases)
+1. Download the latest `.dmg` file from the
+   [Releases page](https://github.com/thesammykins/slackstatus/releases)
 2. Open the downloaded DMG file
 3. Drag "Slack Status Scheduler" to your Applications folder
 4. Open Applications and launch "Slack Status Scheduler"
@@ -78,6 +80,7 @@ You need a Slack user token to update your status:
 ### Dashboard
 
 The Dashboard tab shows:
+
 - **Current Status**: What your status would be right now
 - **Upcoming Changes**: Next scheduled status updates
 - **Quick Actions**: Export options and manual execution
@@ -132,6 +135,7 @@ Create and manage your scheduling rules:
 ### Preview
 
 Test your schedule without making actual changes:
+
 - Preview what would happen on specific dates
 - See upcoming changes for the next week
 - Validate your schedule configuration
@@ -139,6 +143,7 @@ Test your schedule without making actual changes:
 ### Settings
 
 Configure app behavior:
+
 - **Slack Token**: Store your authentication token securely
 - **App Settings**: Auto-start, notifications, logging level
 - **Export Options**: Generate GitHub Actions or Cloudflare Worker configs
@@ -146,6 +151,7 @@ Configure app behavior:
 ### Logs
 
 Monitor app activity:
+
 - View execution logs
 - Filter by log level (Error, Warning, Info, Debug)
 - Export logs for troubleshooting
@@ -153,25 +159,30 @@ Monitor app activity:
 ## Features
 
 ### 🔐 Secure Token Storage
+
 - Tokens are stored in macOS Keychain
 - Never logged or exposed in plain text
 - Encrypted at rest
 
 ### 🌍 Timezone Support
+
 - Full timezone support with DST handling
 - Configure once, works everywhere
 
 ### 📱 Menu Bar Integration
+
 - Quick access from menu bar
 - Native macOS experience
 - Minimal resource usage
 
 ### 📤 Export Options
+
 - Generate GitHub Actions workflows
 - Create Cloudflare Worker scripts
 - Deploy anywhere you want
 
 ### 🔄 Background Execution
+
 - Runs silently in the background
 - Auto-starts with macOS (optional)
 - Low memory footprint
@@ -181,12 +192,13 @@ Monitor app activity:
 ### App Won't Start
 
 1. **Check macOS Version**: Requires macOS 10.15+
-2. **Security Settings**: Go to System Preferences → Security & Privacy → General
+2. **Security Settings**: Go to System Preferences → Security & Privacy →
+   General
 3. **Allow the app**: If blocked, click "Open Anyway"
 
 ### Token Issues
 
-1. **Invalid Token Error**: 
+1. **Invalid Token Error**:
    - Verify token starts with `xoxp-`
    - Check token hasn't expired
    - Ensure `users.profile:write` scope is granted
@@ -204,7 +216,7 @@ Monitor app activity:
 
 ### Performance Issues
 
-1. **High CPU Usage**: 
+1. **High CPU Usage**:
    - Restart the app
    - Check for infinite loops in schedule rules
    - Reduce log level in Settings
@@ -310,6 +322,7 @@ macos/
 ### Reporting Issues
 
 Please include:
+
 - macOS version
 - App version
 - Steps to reproduce
@@ -319,6 +332,7 @@ Please include:
 ### Feature Requests
 
 We welcome suggestions for:
+
 - New scheduling rule types
 - UI improvements
 - Integration options

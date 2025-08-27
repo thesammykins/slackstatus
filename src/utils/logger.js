@@ -93,20 +93,20 @@ export function createLogger(level = 'info', options = {}) {
       const formatted = formatMessage(logLevel, message, meta);
 
       switch (logLevel) {
-      case 'error':
-        console.error(formatted);
-        break;
-      case 'warn':
-        console.warn(formatted);
-        break;
-      case 'info':
-        console.info(formatted);
-        break;
-      case 'debug':
-        console.log(formatted);
-        break;
-      default:
-        console.log(formatted);
+        case 'error':
+          console.error(formatted);
+          break;
+        case 'warn':
+          console.warn(formatted);
+          break;
+        case 'info':
+          console.info(formatted);
+          break;
+        case 'debug':
+          console.log(formatted);
+          break;
+        default:
+          console.log(formatted);
       }
     }
   }

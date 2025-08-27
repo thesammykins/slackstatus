@@ -1,15 +1,19 @@
 # Cloudflare Worker Deployment Guide
 
-This guide shows you how to deploy the Slack Status Scheduler as a Cloudflare Worker for serverless, global status updates. Cloudflare Workers offer excellent performance, generous free tier limits, and automatic scaling.
+This guide shows you how to deploy the Slack Status Scheduler as a Cloudflare
+Worker for serverless, global status updates. Cloudflare Workers offer excellent
+performance, generous free tier limits, and automatic scaling.
 
 ## Overview
 
 Cloudflare Workers will:
+
 - Run your schedule automatically using cron triggers
 - Update your Slack status with sub-second latency worldwide
 - Handle timezone conversions and DST automatically
 - Provide HTTP endpoints for manual triggering and monitoring
-- Cost very little (10,000 free requests per day, 100,000 free cron triggers per month)
+- Cost very little (10,000 free requests per day, 100,000 free cron triggers per
+  month)
 
 ## Prerequisites
 
@@ -32,7 +36,8 @@ Cloudflare Workers will:
 6. Click **"Install to Workspace"** at the top
 7. Copy the **"User OAuth Token"** (starts with `xoxp-`)
 
-⚠️ **Important**: Use a **User Token** (`xoxp-`), not a Bot Token (`xoxb-`). Bot tokens cannot update user status.
+⚠️ **Important**: Use a **User Token** (`xoxp-`), not a Bot Token (`xoxb-`). Bot
+tokens cannot update user status.
 
 ## Step 2: Install Wrangler CLI
 
@@ -111,7 +116,9 @@ The cron format is: `minute hour day-of-month month day-of-week`
 - `0 9,12,17 * * 1-5` - At 9 AM, 12 PM, and 5 PM on weekdays
 - `*/10 8-19 * * 1-5` - Every 10 minutes, 8 AM-7 PM, weekdays
 
-**Timezone Note**: Cron triggers run in UTC. Adjust the hours based on your timezone:
+**Timezone Note**: Cron triggers run in UTC. Adjust the hours based on your
+timezone:
+
 - PST (UTC-8): 9 AM PST = 17 UTC, so use `*/15 17-1 * * 1-5`
 - EST (UTC-5): 9 AM EST = 14 UTC, so use `*/15 14-22 * * 1-5`
 
@@ -175,7 +182,8 @@ wrangler secret put SCHEDULE_CONFIG
 # {"version":1,"rules":[{"id":"morning-focus",...}]}
 ```
 
-**Tip**: Use `jq -c . schedule.json` to convert your JSON to a compact single line.
+**Tip**: Use `jq -c . schedule.json` to convert your JSON to a compact single
+line.
 
 ## Step 6: Deploy Your Worker
 
@@ -188,6 +196,7 @@ wrangler deploy --env dev
 ```
 
 After deployment, you'll see output like:
+
 ```
 Published slack-status-scheduler (1.23 sec)
   https://slack-status-scheduler.your-subdomain.workers.dev
@@ -290,6 +299,7 @@ vars = { ENV = "production" }
 ```
 
 Deploy to specific environments:
+
 ```bash
 wrangler deploy --env dev
 wrangler deploy --env production
@@ -306,6 +316,7 @@ id = "your-kv-namespace-id"
 ```
 
 Create a KV namespace:
+
 ```bash
 wrangler kv:namespace create "SCHEDULER_LOGS"
 ```
@@ -321,7 +332,8 @@ binding = "SCHEDULER_METRICS"
 
 ## Security Best Practices
 
-1. **Use Secrets**: Always use `wrangler secret put` for tokens, never put them in code
+1. **Use Secrets**: Always use `wrangler secret put` for tokens, never put them
+   in code
 2. **Minimal Permissions**: Only grant required Slack scopes
 3. **Secure Endpoints**: Consider adding authentication for HTTP endpoints
 4. **Regular Token Rotation**: Regenerate Slack tokens periodically
@@ -338,6 +350,7 @@ if (!auth || auth !== `Bearer ${env.API_KEY}`) {
 ```
 
 Then set an API key:
+
 ```bash
 wrangler secret put API_KEY
 ```
@@ -347,25 +360,30 @@ wrangler secret put API_KEY
 ### Common Issues
 
 **❌ "SLACK_TOKEN not configured"**
+
 - Run `wrangler secret put SLACK_TOKEN` and paste your token
 - Ensure you're using a User Token (`xoxp-`), not Bot Token (`xoxb-`)
 
 **❌ "SCHEDULE_CONFIG not configured"**
+
 - Run `wrangler secret put SCHEDULE_CONFIG`
 - Paste your schedule as a single-line JSON string
 - Validate JSON syntax first
 
 **❌ "Invalid token" or "not_authed"**
+
 - Check that your Slack token is valid and hasn't expired
 - Ensure the token has `users.profile:write` scope
 - Test the token manually with the Slack API
 
 **❌ "Worker exceeded CPU time limit"**
+
 - Simplify your schedule configuration
 - Reduce the number of rules
 - Consider optimizing the scheduling logic
 
 **❌ "Cron triggers not firing"**
+
 - Check your cron syntax with [crontab.guru](https://crontab.guru/)
 - Verify you're within Cloudflare's free tier limits (100k cron triggers/month)
 - Check the Cloudflare dashboard for trigger status
@@ -397,13 +415,14 @@ wrangler env list
 ### Cloudflare Free Tier
 
 - **100,000 requests per day** (more than enough for status updates)
-- **100,000 cron triggers per month** 
+- **100,000 cron triggers per month**
 - **10ms CPU time per request**
 - **128MB memory**
 
 ### Typical Usage
 
 Running every 15 minutes:
+
 - ~2,880 executions per month (well within free limits)
 - ~1-2ms CPU time per execution
 - Minimal memory usage
@@ -411,6 +430,7 @@ Running every 15 minutes:
 ### Paid Plan Benefits
 
 If you need more (Workers Paid at $5/month):
+
 - **10 million requests per month**
 - **30 seconds CPU time per request**
 - **Advanced features like Durable Objects**
@@ -430,6 +450,7 @@ cp wrangler.toml backup-wrangler-$(date +%Y%m%d).toml
 ### Switch Between Deployment Methods
 
 Your `schedule.json` is portable between:
+
 - Cloudflare Workers
 - GitHub Actions
 - Local CLI execution
@@ -474,6 +495,7 @@ Once your Cloudflare Worker is running:
 5. **Consider the macOS app** for easier schedule editing
 
 For more help, see:
+
 - [Troubleshooting Guide](troubleshooting.md)
 - [API Documentation](api.md)
 - [Example Schedules](../examples/)
@@ -481,6 +503,7 @@ For more help, see:
 ## Support
 
 If you run into issues:
+
 1. Check the troubleshooting section above
 2. Validate your schedule configuration locally first
 3. Test with dry-run mode
@@ -489,16 +512,18 @@ If you run into issues:
 
 ## Comparison: Cloudflare Workers vs GitHub Actions
 
-| Feature | Cloudflare Workers | GitHub Actions |
-|---------|-------------------|----------------|
-| **Cost** | Free tier: 100k requests/day | Free tier: 2000 minutes/month |
-| **Latency** | <100ms worldwide | 2-5 minutes to start |
-| **Reliability** | 99.99% uptime | Depends on GitHub |
-| **Setup Complexity** | Medium | Easy |
-| **Custom Logic** | Full JavaScript control | Limited to shell commands |
-| **Monitoring** | Rich analytics | Basic workflow logs |
-| **Geographic** | Global edge deployment | Single region |
+| Feature              | Cloudflare Workers           | GitHub Actions                |
+| -------------------- | ---------------------------- | ----------------------------- |
+| **Cost**             | Free tier: 100k requests/day | Free tier: 2000 minutes/month |
+| **Latency**          | <100ms worldwide             | 2-5 minutes to start          |
+| **Reliability**      | 99.99% uptime                | Depends on GitHub             |
+| **Setup Complexity** | Medium                       | Easy                          |
+| **Custom Logic**     | Full JavaScript control      | Limited to shell commands     |
+| **Monitoring**       | Rich analytics               | Basic workflow logs           |
+| **Geographic**       | Global edge deployment       | Single region                 |
 
-**Choose Cloudflare Workers if**: You want the fastest response times, detailed analytics, and advanced customization.
+**Choose Cloudflare Workers if**: You want the fastest response times, detailed
+analytics, and advanced customization.
 
-**Choose GitHub Actions if**: You prefer simpler setup, already use GitHub, or want minimal configuration.
+**Choose GitHub Actions if**: You prefer simpler setup, already use GitHub, or
+want minimal configuration.

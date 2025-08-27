@@ -17,8 +17,8 @@ This guide helps you troubleshoot common issues with the Slack Status Scheduler.
 
 ### Node.js Version Error
 
-**Error:** `node: --experimental-vm-modules`
-**Solution:** Ensure you're using Node.js 18 or later:
+**Error:** `node: --experimental-vm-modules` **Solution:** Ensure you're using
+Node.js 18 or later:
 
 ```bash
 node --version
@@ -26,6 +26,7 @@ node --version
 ```
 
 If you need to upgrade Node.js:
+
 ```bash
 # Using nvm (recommended)
 nvm install 18
@@ -47,8 +48,8 @@ nvm use 18
 
 ### Permission Issues
 
-**Error:** `EACCES: permission denied`
-**Solution:** Don't use `sudo` with npm. Fix permissions:
+**Error:** `EACCES: permission denied` **Solution:** Don't use `sudo` with npm.
+Fix permissions:
 
 ```bash
 # Fix npm permissions
@@ -61,8 +62,8 @@ source ~/.bashrc
 
 ### Invalid Token Format
 
-**Error:** `Token must be a user token starting with xoxp-`
-**Solution:** Ensure you're using a user token, not a bot token:
+**Error:** `Token must be a user token starting with xoxp-` **Solution:** Ensure
+you're using a user token, not a bot token:
 
 1. Go to [Slack API: Your Apps](https://api.slack.com/apps)
 2. Select your app
@@ -72,8 +73,8 @@ source ~/.bashrc
 
 ### Missing Permissions
 
-**Error:** `Token missing users.profile:write scope`
-**Solution:** Add the required scope to your Slack app:
+**Error:** `Token missing users.profile:write scope` **Solution:** Add the
+required scope to your Slack app:
 
 1. Go to [Slack API: Your Apps](https://api.slack.com/apps)
 2. Select your app
@@ -85,8 +86,7 @@ source ~/.bashrc
 
 ### Token Not Working
 
-**Error:** `Connection test failed`
-**Solution:** Test your token:
+**Error:** `Connection test failed` **Solution:** Test your token:
 
 ```bash
 # Test token directly
@@ -101,8 +101,8 @@ curl -H "Authorization: Bearer xoxp-your-token-here" \
 
 ### Validation Errors
 
-**Error:** `Schedule configuration is invalid`
-**Solution:** Use the validator to see specific issues:
+**Error:** `Schedule configuration is invalid` **Solution:** Use the validator
+to see specific issues:
 
 ```bash
 npm run cli validate schedule.json --verbose
@@ -111,36 +111,44 @@ npm run cli validate schedule.json --verbose
 Common validation issues:
 
 1. **Invalid timezone**: Use IANA timezone names
+
    ```json
    "timezone": "America/Los_Angeles"  // ✓ Correct
    "timezone": "PST"                  // ✗ Incorrect
    ```
 
 2. **Invalid day format**: Use 3-letter abbreviations
+
    ```json
    "days": ["mon", "tue", "wed"]      // ✓ Correct
    "days": ["Monday", "Tuesday"]      // ✗ Incorrect
    ```
 
 3. **Invalid time format**: Use HH:MM format
+
    ```json
    "time": "09:00"                    // ✓ Correct
    "time": "9am"                      // ✗ Incorrect
    ```
 
 4. **Emoji format**: Use Unicode emojis or Slack emoji codes
+
    ```json
    "emoji": "💻"                      // ✓ Correct (Unicode)
    "emoji": ":computer:"              // ✓ Correct (Slack code)
    "emoji": "laptop"                  // ✗ Incorrect (no colons)
    ```
-   
-   **Note**: Unicode emojis (like 💻) work in all Slack workspaces, while custom Slack emojis (like `:custom_emoji:`) only work if they exist in your specific workspace. If you get a `profile_status_set_failed_not_valid_emoji` error, the emoji doesn't exist in your workspace - try using a standard Unicode emoji instead.
+
+   **Note**: Unicode emojis (like 💻) work in all Slack workspaces, while custom
+   Slack emojis (like `:custom_emoji:`) only work if they exist in your specific
+   workspace. If you get a `profile_status_set_failed_not_valid_emoji` error,
+   the emoji doesn't exist in your workspace - try using a standard Unicode
+   emoji instead.
 
 ### Rules Not Matching
 
-**Problem:** Rules aren't triggering when expected
-**Solution:** Use preview to debug:
+**Problem:** Rules aren't triggering when expected **Solution:** Use preview to
+debug:
 
 ```bash
 # Preview specific date
@@ -151,6 +159,7 @@ npm run cli preview schedule.json --next 7 --verbose
 ```
 
 Check:
+
 1. **Timezone**: Ensure rule time is in schedule timezone
 2. **Date format**: Verify dates are YYYY-MM-DD
 3. **Rule order**: First matching rule wins
@@ -158,10 +167,10 @@ Check:
 
 ### Interval Rules Not Working
 
-**Problem:** `every_n_days` rules not matching expected dates
-**Solution:** 
+**Problem:** `every_n_days` rules not matching expected dates **Solution:**
 
 1. Count days from `start_date`:
+
    ```bash
    # Day 0: start_date
    # Day 3: start_date + 3 days
@@ -180,19 +189,20 @@ Check:
 
 ### Wrong Time Execution
 
-**Problem:** Rules executing at wrong time
-**Solution:**
+**Problem:** Rules executing at wrong time **Solution:**
 
 1. **Check system timezone**:
+
    ```bash
    timedatectl status  # Linux
    date                # macOS/Linux
    ```
 
 2. **Verify schedule timezone**:
+
    ```json
    {
-     "timezone": "America/Los_Angeles"  // Must match your intended timezone
+     "timezone": "America/Los_Angeles" // Must match your intended timezone
    }
    ```
 
@@ -203,14 +213,15 @@ Check:
 
 ### DST Transitions
 
-**Problem:** Rules behaving strangely during DST changes
-**Solution:** The scheduler handles DST automatically, but be aware:
+**Problem:** Rules behaving strangely during DST changes **Solution:** The
+scheduler handles DST automatically, but be aware:
 
 1. **Spring Forward**: 2 AM becomes 3 AM (lost hour)
 2. **Fall Back**: 2 AM happens twice (gained hour)
 3. Rules with specific times may shift by an hour
 
 Test around DST transitions:
+
 ```bash
 # Test spring forward (March)
 npm run cli preview schedule.json --date 2024-03-10
@@ -223,10 +234,10 @@ npm run cli preview schedule.json --date 2024-11-03
 
 ### Command Not Found
 
-**Error:** `command not found: slack-status-cli`
-**Solution:**
+**Error:** `command not found: slack-status-cli` **Solution:**
 
 1. **Use npm run cli**:
+
    ```bash
    npm run cli -- validate schedule.json
    ```
@@ -239,8 +250,7 @@ npm run cli preview schedule.json --date 2024-11-03
 
 ### Permission Denied on macOS
 
-**Error:** `Permission denied` when running CLI
-**Solution:**
+**Error:** `Permission denied` when running CLI **Solution:**
 
 ```bash
 # Make CLI executable
@@ -252,8 +262,8 @@ node cli/index.js validate schedule.json
 
 ### Import Path Errors
 
-**Error:** `Cannot resolve module`
-**Solution:** Ensure you're running from the project root:
+**Error:** `Cannot resolve module` **Solution:** Ensure you're running from the
+project root:
 
 ```bash
 cd slack_status
@@ -264,8 +274,7 @@ npm run cli -- validate schedule.json
 
 ### App Won't Start
 
-**Problem:** macOS app doesn't launch
-**Solution:**
+**Problem:** macOS app doesn't launch **Solution:**
 
 1. **Check macOS version**: Requires macOS 12+
 2. **Check security settings**: Allow app in System Preferences → Security
@@ -273,8 +282,7 @@ npm run cli -- validate schedule.json
 
 ### Keychain Access Issues
 
-**Problem:** Can't save token to Keychain
-**Solution:**
+**Problem:** Can't save token to Keychain **Solution:**
 
 1. **Grant Keychain access**: Allow when prompted
 2. **Reset Keychain**: Delete existing entries in Keychain Access
@@ -282,8 +290,7 @@ npm run cli -- validate schedule.json
 
 ### Menu Bar Icon Missing
 
-**Problem:** App running but no menu bar icon
-**Solution:**
+**Problem:** App running but no menu bar icon **Solution:**
 
 1. **Check menu bar**: Look in the far right of menu bar
 2. **Reset preferences**: Delete app preferences and restart
@@ -293,8 +300,7 @@ npm run cli -- validate schedule.json
 
 ### GitHub Actions Not Running
 
-**Problem:** Exported workflow doesn't execute
-**Solution:**
+**Problem:** Exported workflow doesn't execute **Solution:**
 
 1. **Check workflow file**: Must be in `.github/workflows/`
 2. **Check syntax**: Validate YAML syntax
@@ -303,11 +309,12 @@ npm run cli -- validate schedule.json
 5. **Check permissions**: Repository must allow Actions
 
 Example working workflow:
+
 ```yaml
 name: Slack Status Update
 on:
   schedule:
-    - cron: '0 17 * * 1-5'  # 5 PM UTC, Mon-Fri
+    - cron: '0 17 * * 1-5' # 5 PM UTC, Mon-Fri
 jobs:
   update-status:
     runs-on: ubuntu-latest
@@ -324,8 +331,7 @@ jobs:
 
 ### Cloudflare Worker Issues
 
-**Problem:** Worker not executing or failing
-**Solution:**
+**Problem:** Worker not executing or failing **Solution:**
 
 1. **Check deployment**: Ensure worker is deployed and enabled
 2. **Check triggers**: Verify cron triggers are configured
@@ -335,8 +341,7 @@ jobs:
 
 ### Schedule Not Converting to UTC
 
-**Problem:** Exported schedules running at wrong time
-**Solution:**
+**Problem:** Exported schedules running at wrong time **Solution:**
 
 The exporter should convert times to UTC. If not working:
 
@@ -348,8 +353,7 @@ The exporter should convert times to UTC. If not working:
 
 ### Slow Execution
 
-**Problem:** Scheduler takes too long to run
-**Solution:**
+**Problem:** Scheduler takes too long to run **Solution:**
 
 1. **Reduce rules**: Fewer rules = faster evaluation
 2. **Optimize rule order**: Put most common rules first
@@ -366,8 +370,7 @@ The exporter should convert times to UTC. If not working:
 
 ### Memory Issues
 
-**Problem:** High memory usage
-**Solution:**
+**Problem:** High memory usage **Solution:**
 
 1. **Restart application**: Memory leaks in long-running processes
 2. **Reduce logging**: Set log level to 'error'
@@ -440,20 +443,20 @@ When reporting issues, include:
 
 ## FAQ
 
-**Q: Can I use multiple schedules?**
-A: No, use one schedule file with multiple rules.
+**Q: Can I use multiple schedules?** A: No, use one schedule file with multiple
+rules.
 
-**Q: Can I test without a Slack token?**
-A: Yes, use `--dry-run` or `preview` commands.
+**Q: Can I test without a Slack token?** A: Yes, use `--dry-run` or `preview`
+commands.
 
-**Q: Why isn't my weekend rule working?**
-A: Check if another rule has `only_weekdays: true` that's matching first.
+**Q: Why isn't my weekend rule working?** A: Check if another rule has
+`only_weekdays: true` that's matching first.
 
-**Q: Can I use custom emojis?**
-A: Yes, use the custom emoji shortcode like `:custom_emoji:`
+**Q: Can I use custom emojis?** A: Yes, use the custom emoji shortcode like
+`:custom_emoji:`
 
-**Q: How do I schedule for different timezones?**
-A: Use one timezone in the schedule, rules will be evaluated in that timezone.
+**Q: How do I schedule for different timezones?** A: Use one timezone in the
+schedule, rules will be evaluated in that timezone.
 
-**Q: Can I run multiple status updates per day?**
-A: Yes, create multiple rules with different times.
+**Q: Can I run multiple status updates per day?** A: Yes, create multiple rules
+with different times.

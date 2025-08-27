@@ -1,10 +1,14 @@
 # GitHub Actions Deployment Guide
 
-This guide shows you how to deploy the Slack Status Scheduler using GitHub Actions for automated status updates. With this approach, your status updates run in the cloud on GitHub's infrastructure, so you don't need to keep your computer running.
+This guide shows you how to deploy the Slack Status Scheduler using GitHub
+Actions for automated status updates. With this approach, your status updates
+run in the cloud on GitHub's infrastructure, so you don't need to keep your
+computer running.
 
 ## Overview
 
 GitHub Actions will:
+
 - Run your schedule automatically based on cron timing
 - Update your Slack status according to your rules
 - Handle timezone conversions and DST automatically
@@ -33,9 +37,11 @@ GitHub Actions will:
 
 ### Option B: Use Existing App Token
 
-If you already have a Slack app with the right permissions, just copy the User OAuth Token.
+If you already have a Slack app with the right permissions, just copy the User
+OAuth Token.
 
-⚠️ **Important**: Use a **User Token** (`xoxp-`), not a Bot Token (`xoxb-`). Bot tokens cannot update user status.
+⚠️ **Important**: Use a **User Token** (`xoxp-`), not a Bot Token (`xoxb-`). Bot
+tokens cannot update user status.
 
 ## Step 2: Create Your Repository
 
@@ -54,13 +60,14 @@ If you already have a Slack app with the right permissions, just copy the User O
 1. Create a new repository on GitHub
 2. Clone it locally and add the workflow file:
    1. **Clone your fork and set up the workflow**:
+
       ```bash
       git clone https://github.com/YOUR_USERNAME/your-schedule-repo.git
       cd your-schedule-repo
-   
+
       # Create the workflow directory
       mkdir -p .github/workflows
-   
+
       # Copy the workflow file from the exports directory
       curl -o .github/workflows/slack-status-scheduler.yml \
         https://raw.githubusercontent.com/thesammykins/slackstatus/main/exports/github-actions/slack-status-scheduler.yml
@@ -126,11 +133,13 @@ For more examples, see the `examples/` directory.
 5. Value: Your Slack user token (the `xoxp-` token from Step 1)
 6. Click **"Add secret"**
 
-⚠️ **Security**: Never put your token directly in code files. Always use GitHub Secrets.
+⚠️ **Security**: Never put your token directly in code files. Always use GitHub
+Secrets.
 
 ## Step 5: Customize the Workflow Schedule
 
-Edit `.github/workflows/slack-status-scheduler.yml` to adjust when the scheduler runs:
+Edit `.github/workflows/slack-status-scheduler.yml` to adjust when the scheduler
+runs:
 
 ```yaml
 on:
@@ -148,7 +157,8 @@ on:
 - `0 */2 * * *` - Every 2 hours
 - `0 9,12,17 * * 1-5` - At 9 AM, 12 PM, and 5 PM on weekdays
 
-**Tip**: Use [crontab.guru](https://crontab.guru/) to validate your cron expressions.
+**Tip**: Use [crontab.guru](https://crontab.guru/) to validate your cron
+expressions.
 
 ## Step 6: Test Your Setup
 
@@ -173,17 +183,19 @@ SLACK_TOKEN=your-token node cli/index.js run ../schedule.json --dry-run
 ### Test on GitHub Actions
 
 1. Commit and push your files:
+
    ```bash
    git add .
    git commit -m "Add Slack status scheduler configuration"
    git push origin main
    ```
 
-2. **The workflow file is ready to use** (URLs are already configured for the main repository)
+2. **The workflow file is ready to use** (URLs are already configured for the
+   main repository)
 3. Go to your repository → **Actions** tab
 4. Click **"Slack Status Scheduler"** workflow
 5. Click **"Run workflow"** dropdown
-6. Check **"Run in dry-run mode"** 
+6. Check **"Run in dry-run mode"**
 7. Click **"Run workflow"**
 
 This will test everything without actually changing your status.
@@ -209,23 +221,29 @@ The workflow will now run automatically according to your cron schedule.
 ### Common Issues
 
 **❌ "SLACK_TOKEN secret not found"**
+
 - Solution: Add your Slack token as a repository secret (see Step 4)
 
 **❌ "Invalid token"**
+
 - Check that you're using a User Token (`xoxp-`), not a Bot Token (`xoxb-`)
 - Ensure the token has `users.profile:write` scope
 - Verify the token is still valid (doesn't expire)
 
 **❌ "Schedule file not found"**
+
 - Ensure `schedule.json` is in your repository root
 - Check the file name spelling and case sensitivity
 
 **❌ "Rule validation failed"**
-- Validate your schedule locally first: `node cli/index.js validate --schedule schedule.json`
+
+- Validate your schedule locally first:
+  `node cli/index.js validate --schedule schedule.json`
 - Check JSON syntax with a validator
 - Verify timezone names and time formats
 
 **❌ "Network or API errors"**
+
 - Usually temporary Slack API issues
 - The workflow will retry on the next scheduled run
 - Check [Slack API Status](https://status.slack.com/)
@@ -233,6 +251,7 @@ The workflow will now run automatically according to your cron schedule.
 ### Adjust Frequency
 
 If you're hitting GitHub Actions usage limits:
+
 - Reduce frequency (e.g., every 30 minutes instead of 15)
 - Run only during work hours
 - Use fewer weekend checks
@@ -240,6 +259,7 @@ If you're hitting GitHub Actions usage limits:
 ### Notifications
 
 Enable GitHub notifications for failed workflows:
+
 1. Go to your GitHub notification settings
 2. Enable "Actions" notifications
 3. You'll get emails when workflows fail
@@ -253,23 +273,26 @@ You can use different schedules for different contexts:
 ```yaml
 # In the workflow file
 env:
-  SCHEDULE_FILE: ${{ github.event.inputs.schedule_file || 'work-schedule.json' }}
+  SCHEDULE_FILE:
+    ${{ github.event.inputs.schedule_file || 'work-schedule.json' }}
 ```
 
 ### Environment-Specific Schedules
 
 Create different branches for different environments:
+
 - `main` - Your regular work schedule
 - `vacation` - Vacation auto-responder
 - `conference` - Conference/travel schedule
 
 ### Custom Timezone
 
-The scheduler respects the timezone in your `schedule.json` rules, but you can set a default for logging:
+The scheduler respects the timezone in your `schedule.json` rules, but you can
+set a default for logging:
 
 ```yaml
 env:
-  TZ: America/New_York  # Adjust to your timezone
+  TZ: America/New_York # Adjust to your timezone
 ```
 
 ## Security Best Practices
@@ -278,7 +301,8 @@ env:
 2. **Use user tokens**: Bot tokens can't update user status
 3. **Minimal permissions**: Only add required Slack scopes
 4. **Regular rotation**: Regenerate tokens periodically
-5. **Private repositories**: Consider using private repos for sensitive schedules
+5. **Private repositories**: Consider using private repos for sensitive
+   schedules
 
 ## Cost Considerations
 
@@ -287,7 +311,9 @@ env:
 - **Typical usage**: ~50-100 minutes/month depending on frequency
 
 Running every 15 minutes uses roughly:
-- ~1 minute per run × 4 runs/hour × 10 hours/day × 22 workdays = ~880 minutes/month
+
+- ~1 minute per run × 4 runs/hour × 10 hours/day × 22 workdays = ~880
+  minutes/month
 
 ## Migration and Backup
 
@@ -304,6 +330,7 @@ cp schedule.json backup-schedule-$(date +%Y%m%d).json
 ### Switch to Local or macOS App
 
 You can later migrate to the macOS app or local running:
+
 1. Your `schedule.json` file is portable
 2. Export/import your token through the macOS Keychain
 3. Disable the GitHub Actions workflow when not needed
@@ -318,6 +345,7 @@ Once your GitHub Actions deployment is working:
 4. **Set up multiple schedules** for different work patterns
 
 For more help, see:
+
 - [Troubleshooting Guide](troubleshooting.md)
 - [API Documentation](api.md)
 - [Example Schedules](../examples/)
@@ -325,6 +353,7 @@ For more help, see:
 ## Support
 
 If you run into issues:
+
 1. Check the troubleshooting guide
 2. Validate your schedule locally first
 3. Test with dry-run mode

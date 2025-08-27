@@ -332,18 +332,18 @@ program
         console.log(`   Status: "${rule.status.text}" ${rule.status.emoji}`);
 
         switch (rule.type) {
-        case 'weekly':
-          console.log(`   Days: ${rule.days.join(', ')}`);
-          break;
-        case 'every_n_days':
-          console.log(`   Start: ${rule.start_date}`);
-          console.log(`   Interval: Every ${rule.interval_days} days`);
-          break;
-        case 'dates':
-          console.log(
-            `   Dates: ${rule.dates.slice(0, 3).join(', ')}${rule.dates.length > 3 ? '...' : ''}`,
-          );
-          break;
+          case 'weekly':
+            console.log(`   Days: ${rule.days.join(', ')}`);
+            break;
+          case 'every_n_days':
+            console.log(`   Start: ${rule.start_date}`);
+            console.log(`   Interval: Every ${rule.interval_days} days`);
+            break;
+          case 'dates':
+            console.log(
+              `   Dates: ${rule.dates.slice(0, 3).join(', ')}${rule.dates.length > 3 ? '...' : ''}`,
+            );
+            break;
         }
 
         if (rule.time) {

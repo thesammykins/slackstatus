@@ -4,7 +4,10 @@
 
 import { describe, test, expect } from '@jest/globals';
 import { DateTime } from 'luxon';
-import { createScheduleEvaluator, getNextExecutionDescription } from '../src/scheduler/evaluator.js';
+import {
+  createScheduleEvaluator,
+  getNextExecutionDescription,
+} from '../src/scheduler/evaluator.js';
 
 describe('Schedule Evaluator', () => {
   const timezone = 'America/Los_Angeles';

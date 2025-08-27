@@ -169,7 +169,7 @@ describe('Schedule Validator', () => {
 
       const errors = validateRule(rule);
       expect(errors).toContain(
-        "Invalid rule type: invalid_type. Must be 'weekly', 'every_n_days', or 'dates'"
+        "Invalid rule type: invalid_type. Must be 'weekly', 'every_n_days', or 'dates'",
       );
     });
 
@@ -214,7 +214,7 @@ describe('Schedule Validator', () => {
 
       const errors = validateRule(rule);
       expect(errors).toContain(
-        'Invalid days: monday, invalid_day. Must be: mon, tue, wed, thu, fri, sat, sun'
+        'Invalid days: monday, invalid_day. Must be: mon, tue, wed, thu, fri, sat, sun',
       );
     });
 
@@ -283,7 +283,7 @@ describe('Schedule Validator', () => {
 
       const errors = validateRule(rule);
       expect(errors).toContain(
-        'Invalid date formats: 2024-13-01, invalid-date. Must be YYYY-MM-DD'
+        'Invalid date formats: 2024-13-01, invalid-date. Must be YYYY-MM-DD',
       );
     });
 
@@ -318,7 +318,7 @@ describe('Schedule Validator', () => {
 
       const errors = validateRule(rule);
       expect(errors).toContain(
-        'Status: Invalid emoji format: :malformed-emoji. Must be Unicode emoji (🙂) or Slack emoji (:smile:) format'
+        'Status: Invalid emoji format: :malformed-emoji. Must be Unicode emoji (🙂) or Slack emoji (:smile:) format',
       );
     });
 

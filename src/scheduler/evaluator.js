@@ -73,14 +73,14 @@ function evaluateRule(rule, localDate) {
   }
 
   switch (rule.type) {
-  case 'weekly':
-    return evaluateWeeklyRule(rule, localDate);
-  case 'every_n_days':
-    return evaluateIntervalRule(rule, localDate);
-  case 'dates':
-    return evaluateDateRule(rule, localDate);
-  default:
-    throw new Error(`Unknown rule type: ${rule.type}`);
+    case 'weekly':
+      return evaluateWeeklyRule(rule, localDate);
+    case 'every_n_days':
+      return evaluateIntervalRule(rule, localDate);
+    case 'dates':
+      return evaluateDateRule(rule, localDate);
+    default:
+      throw new Error(`Unknown rule type: ${rule.type}`);
   }
 }
 
@@ -192,22 +192,24 @@ export function getNextExecutionDescription(rule, timezone) {
   const now = DateTime.now().setZone(timezone);
 
   switch (rule.type) {
-  case 'weekly':
-    return getNextWeeklyExecution(rule, now);
-  case 'every_n_days':
-    return getNextIntervalExecution(rule, now);
-  case 'dates':
-    return getNextDateExecution(rule, now);
-  default:
-    return 'Unknown rule type';
+    case 'weekly':
+      return getNextWeeklyExecution(rule, now);
+    case 'every_n_days':
+      return getNextIntervalExecution(rule, now);
+    case 'dates':
+      return getNextDateExecution(rule, now);
+    default:
+      return 'Unknown rule type';
   }
 }
 
 function getNextWeeklyExecution(rule, now) {
-  const days = rule.days.map(day => {
-    const dayMap = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6, sun: 7 };
-    return dayMap[day];
-  }).sort();
+  const days = rule.days
+    .map(day => {
+      const dayMap = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6, sun: 7 };
+      return dayMap[day];
+    })
+    .sort();
 
   const currentWeekday = now.weekday;
   let nextDay = days.find(day => day > currentWeekday);
@@ -240,9 +242,7 @@ function getNextIntervalExecution(rule, now) {
 
 function getNextDateExecution(rule, now) {
   const today = now.toISODate();
-  const futureDates = rule.dates
-    .filter(date => date >= today)
-    .sort();
+  const futureDates = rule.dates.filter(date => date >= today).sort();
 
   if (futureDates.length === 0) {
     return 'No future dates scheduled';
