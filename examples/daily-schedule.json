@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "timezone": "America/Los_Angeles",
+  "description": "Daily work schedule with focus time, lunch, and end-of-day status updates",
+  "rules": [
+    {
+      "id": "morning-focus",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "09:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "In focus time - deep work",
+        "emoji": "🧠"
+      },
+      "duration_minutes": 120,
+      "description": "Morning deep work session"
+    },
+    {
+      "id": "lunch-break",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "12:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "At lunch",
+        "emoji": "🍽️"
+      },
+      "duration_minutes": 60,
+      "description": "Daily lunch break"
+    },
+    {
+      "id": "afternoon-focus",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "14:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Afternoon deep work",
+        "emoji": "💻"
+      },
+      "duration_minutes": 90,
+      "description": "Afternoon focus session"
+    },
+    {
+      "id": "end-of-day",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "17:30",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Done for the day",
+        "emoji": "👋"
+      },
+      "duration_minutes": 720,
+      "description": "End of work day until next morning"
+    },
+    {
+      "id": "weekend-off",
+      "type": "weekly",
+      "days": ["sat", "sun"],
+      "time": "09:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Weekend - limited availability",
+        "emoji": "🌴"
+      },
+      "duration_minutes": 1440,
+      "description": "Weekend status"
+    }
+  ],
+  "options": {
+    "clear_on_manual_change": true,
+    "default_status_on_clear": {
+      "text": "",
+      "emoji": ""
+    }
+  }
+}

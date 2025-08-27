@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "timezone": "America/Los_Angeles",
+  "description": "Fixed date schedule for specific events, holidays, and one-time occurrences",
+  "rules": [
+    {
+      "id": "new-years-day",
+      "type": "dates",
+      "dates": ["2024-01-01", "2025-01-01", "2026-01-01"],
+      "time": "00:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Happy New Year! 🎉",
+        "emoji": "🎉"
+      },
+      "duration_minutes": 1440,
+      "description": "New Year's Day holiday"
+    },
+    {
+      "id": "independence-day",
+      "type": "dates",
+      "dates": ["2024-07-04", "2025-07-04", "2026-07-04"],
+      "time": "00:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Independence Day - Out of office",
+        "emoji": "🇺🇸"
+      },
+      "duration_minutes": 1440,
+      "description": "4th of July holiday"
+    },
+    {
+      "id": "thanksgiving-2024",
+      "type": "dates",
+      "dates": ["2024-11-28", "2024-11-29"],
+      "time": "00:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Thanksgiving holiday",
+        "emoji": "🦃"
+      },
+      "duration_minutes": 1440,
+      "description": "Thanksgiving holiday break"
+    },
+    {
+      "id": "christmas-holidays",
+      "type": "dates",
+      "dates": ["2024-12-24", "2024-12-25", "2024-12-26", "2025-12-24", "2025-12-25", "2025-12-26"],
+      "time": "00:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Christmas holidays - limited availability",
+        "emoji": "🎄"
+      },
+      "duration_minutes": 1440,
+      "description": "Christmas holiday period"
+    },
+    {
+      "id": "conference-attendance",
+      "type": "dates",
+      "dates": ["2024-03-15", "2024-03-16", "2024-03-17"],
+      "time": "08:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "At tech conference - limited Slack",
+        "emoji": "🎤"
+      },
+      "duration_minutes": 600,
+      "description": "Tech conference attendance"
+    },
+    {
+      "id": "team-offsite",
+      "type": "dates",
+      "dates": ["2024-06-10", "2024-06-11"],
+      "time": "09:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Team offsite - async responses only",
+        "emoji": "🏢"
+      },
+      "duration_minutes": 480,
+      "description": "Company team building offsite"
+    },
+    {
+      "id": "personal-pto",
+      "type": "dates",
+      "dates": ["2024-08-12", "2024-08-13", "2024-08-14", "2024-08-15", "2024-08-16"],
+      "time": "00:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "On vacation - back Monday",
+        "emoji": "🌴"
+      },
+      "duration_minutes": 1440,
+      "description": "Personal time off"
+    },
+    {
+      "id": "product-launch-day",
+      "type": "dates",
+      "dates": ["2024-09-20"],
+      "time": "07:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Product launch day! All hands on deck",
+        "emoji": "🚀"
+      },
+      "duration_minutes": 720,
+      "description": "Major product launch event"
+    },
+    {
+      "id": "quarterly-planning",
+      "type": "dates",
+      "dates": ["2024-03-29", "2024-06-28", "2024-09-27", "2024-12-20"],
+      "time": "09:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Q planning - deep focus required",
+        "emoji": "📈"
+      },
+      "duration_minutes": 480,
+      "description": "Quarterly planning sessions"
+    },
+    {
+      "id": "company-all-hands",
+      "type": "dates",
+      "dates": ["2024-02-15", "2024-05-15", "2024-08-15", "2024-11-15"],
+      "time": "14:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Company all-hands meeting",
+        "emoji": "🗣️"
+      },
+      "duration_minutes": 90,
+      "description": "Quarterly company-wide meetings"
+    },
+    {
+      "id": "training-day",
+      "type": "dates",
+      "dates": ["2024-04-18", "2024-10-22"],
+      "time": "09:00",
+      "tz": "America/Los_Angeles",
+      "status": {
+        "text": "Professional development training",
+        "emoji": "📚"
+      },
+      "duration_minutes": 480,
+      "description": "Mandatory training sessions"
+    }
+  ],
+  "options": {
+    "clear_on_manual_change": true,
+    "default_status_on_clear": {
+      "text": "",
+      "emoji": ""
+    }
+  }
+}

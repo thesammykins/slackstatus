@@ -1,0 +1,67 @@
+name = "slack-status-scheduler"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Worker configuration
+[build]
+command = ""
+
+# Environment variables (set these in Cloudflare dashboard or via wrangler)
+[vars]
+# SLACK_TOKEN = "xoxp-your-slack-user-token"  # Set this as a secret instead
+# SCHEDULE_CONFIG = "..."  # Your schedule.json as a JSON string
+
+# Secrets (use 'wrangler secret put' to set these securely)
+# Run: wrangler secret put SLACK_TOKEN
+# Then paste your Slack user token when prompted
+
+# Cron triggers for automatic execution
+[[triggers]]
+crons = [
+  # Run every 15 minutes during work hours (9 AM - 6 PM UTC)
+  "*/15 9-18 * * 1-5",
+  # Run every 2 hours on weekends for less frequent checking
+  "0 */2 * * 0,6"
+]
+
+# Optional: Custom domains
+# [route]
+# pattern = "slack-scheduler.yourcompany.com/*"
+# zone_name = "yourcompany.com"
+
+# Resource limits
+[limits]
+cpu_ms = 10000  # 10 seconds max execution time
+
+# Development environment
+[env.dev]
+name = "slack-status-scheduler-dev"
+vars = { ENV = "development" }
+
+# Production environment
+[env.production]
+name = "slack-status-scheduler-prod"
+vars = { ENV = "production" }
+
+# Optional: KV storage for logs or state
+# [[kv_namespaces]]
+# binding = "SCHEDULER_LOGS"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Optional: Durable Objects for advanced state management
+# [[durable_objects.bindings]]
+# name = "SCHEDULER_STATE"
+# class_name = "SchedulerState"
+
+# Optional: Analytics Engine for metrics
+# [[analytics_engine_datasets]]
+# binding = "SCHEDULER_METRICS"
+
+# Worker configuration notes:
+# 1. Set SLACK_TOKEN as a secret: wrangler secret put SLACK_TOKEN
+# 2. Set SCHEDULE_CONFIG as a variable with your JSON schedule
+# 3. Adjust cron triggers based on your timezone and needs
+# 4. Consider using different environments for testing
+# 5. Monitor usage to stay within Cloudflare limits

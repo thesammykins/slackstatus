@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "timezone": "America/New_York",
+  "rules": [
+    {
+      "id": "morning-commute",
+      "type": "weekly",
+      "days": ["mon", "tue", "wed", "thu", "fri"],
+      "time": "08:30",
+      "status": {
+        "text": "Commuting to office",
+        "emoji": ":metro:",
+        "expire_hour": 9
+      }
+    },
+    {
+      "id": "weekend-personal-time",
+      "type": "weekly",
+      "days": ["sat", "sun"],
+      "time": "10:00",
+      "status": {
+        "text": "Personal time - will respond Monday",
+        "emoji": ":calendar:"
+      }
+    },
+    {
+      "id": "monthly-all-hands",
+      "type": "dates",
+      "dates": ["2024-01-15", "2024-02-15", "2024-03-15", "2024-04-15"],
+      "time": "14:00",
+      "status": {
+        "text": "In monthly all-hands meeting",
+        "emoji": ":office:",
+        "expire_hour": 15
+      }
+    }
+  ],
+  "options": {
+    "clear_when_no_match": true,
+    "log_level": "debug"
+  }
+}

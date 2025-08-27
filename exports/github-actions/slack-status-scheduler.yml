@@ -1,0 +1,142 @@
+name: Slack Status Scheduler
+
+on:
+  schedule:
+    # Run every 15 minutes during work hours (9 AM - 6 PM PST, Mon-Fri)
+    # Adjust the cron schedule based on your timezone and preferences
+    - cron: '*/15 9-18 * * 1-5'
+    # Additional schedule for weekend checks (less frequent)
+    - cron: '0 */4 * * 0,6'
+
+  # Allow manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (no actual status changes)'
+        required: false
+        default: 'false'
+        type: boolean
+      schedule_file:
+        description: 'Schedule file to use (relative to repo root)'
+        required: false
+        default: 'schedule.json'
+        type: string
+
+env:
+  # Default schedule file - you can change this or override with workflow_dispatch
+  SCHEDULE_FILE: ${{ github.event.inputs.schedule_file || 'schedule.json' }}
+  # Timezone for logging - adjust as needed
+  TZ: America/Los_Angeles
+
+jobs:
+  update-slack-status:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Slack Status Scheduler
+        run: |
+          # Clone the slack status scheduler
+          # TODO: Replace with your actual repository URL
+          git clone https://github.com/YOUR_USERNAME/slack-status-scheduler.git scheduler
+          cd scheduler
+          npm ci --only=production
+
+      - name: Validate schedule configuration
+        run: |
+          cd scheduler
+          if [ ! -f "../$SCHEDULE_FILE" ]; then
+            echo "❌ Schedule file not found: $SCHEDULE_FILE"
+            echo "Please ensure your schedule.json file exists in the repository root"
+            exit 1
+          fi
+
+          echo "✅ Found schedule file: $SCHEDULE_FILE"
+          echo "🔍 Validating schedule configuration..."
+          node cli/index.js validate --schedule "../$SCHEDULE_FILE"
+
+      - name: Preview upcoming status changes
+        run: |
+          cd scheduler
+          echo "📅 Preview of upcoming status changes:"
+          node cli/index.js preview --schedule "../$SCHEDULE_FILE" --days 1
+
+      - name: Update Slack status
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        run: |
+          cd scheduler
+
+          # Check if this is a dry run
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "🧪 Running in dry-run mode - no actual status changes will be made"
+            node cli/index.js run --schedule "../$SCHEDULE_FILE" --dry-run
+          else
+            echo "🚀 Running scheduler to update Slack status..."
+            node cli/index.js run --schedule "../$SCHEDULE_FILE"
+          fi
+
+      - name: Log execution summary
+        if: always()
+        run: |
+          echo "=== Execution Summary ==="
+          echo "Timestamp: $(date -Iseconds)"
+          echo "Schedule file: $SCHEDULE_FILE"
+          echo "Dry run: ${{ github.event.inputs.dry_run || 'false' }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Repository: ${{ github.repository }}"
+
+          # Show recent commit for reference
+          echo "=== Recent Commit ==="
+          git log -1 --oneline
+
+      - name: Handle errors
+        if: failure()
+        run: |
+          echo "❌ Slack Status Scheduler failed!"
+          echo ""
+          echo "Common issues and solutions:"
+          echo "1. Invalid SLACK_TOKEN secret - ensure it's a valid user token with users.profile:write scope"
+          echo "2. Schedule file errors - check schedule.json syntax and validation"
+          echo "3. Network issues - temporary Slack API problems"
+          echo "4. Permission issues - ensure the token has proper scopes"
+          echo ""
+          echo "Check the logs above for specific error details."
+          echo "For troubleshooting help, see: https://github.com/YOUR_USERNAME/slack-status-scheduler/blob/main/docs/troubleshooting.md"
+          echo "TODO: Update this URL to point to your actual repository"
+
+          # Exit with error code to mark the workflow as failed
+          exit 1
+
+# Security notes:
+# 1. Store your Slack user token as a repository secret named SLACK_TOKEN
+# 2. Use a user token (xoxp-) with users.profile:write scope, not a bot token
+# 3. Keep your schedule.json file in the repository root or update SCHEDULE_FILE
+# 4. Consider using environment-specific schedules for different deployments
+#
+# Setup instructions:
+# 1. Go to repository Settings > Secrets and variables > Actions
+# 2. Add a new repository secret named SLACK_TOKEN
+# 3. Paste your Slack user token (starts with xoxp-)
+# 4. Ensure you have a schedule.json file in your repository root
+# 5. Adjust the cron schedule above to match your needs
+# 6. Update the git clone URL on line 49 to point to your forked repository
+#
+# Timezone handling:
+# - The scheduler uses timezone information from your schedule.json rules
+# - GitHub Actions runs in UTC, but the scheduler handles timezone conversion
+# - Adjust the cron schedule above to align with your primary timezone
+#
+# Monitoring:
+# - Check the Actions tab in your repository for execution logs
+# - Each run shows validation, preview, and execution results
+# - Failed runs will send GitHub notifications if enabled

@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "timezone": "America/New_York",
+  "description": "Interval-based schedule with every-N-days rules for recurring events",
+  "rules": [
+    {
+      "id": "standup-every-2-days",
+      "type": "every_n_days",
+      "start_date": "2024-01-02",
+      "interval_days": 2,
+      "time": "10:00",
+      "tz": "America/New_York",
+      "status": {
+        "text": "Team standup in 15 mins",
+        "emoji": "🗣️"
+      },
+      "duration_minutes": 30,
+      "description": "Standup reminder every other day"
+    },
+    {
+      "id": "deep-work-every-3-days",
+      "type": "every_n_days",
+      "start_date": "2024-01-01",
+      "interval_days": 3,
+      "time": "09:00",
+      "tz": "America/New_York",
+      "status": {
+        "text": "Deep work day - minimal interruptions",
+        "emoji": "🧠"
+      },
+      "duration_minutes": 480,
+      "description": "Focused work session every 3 days"
+    },
+    {
+      "id": "1-on-1-prep-weekly",
+      "type": "every_n_days",
+      "start_date": "2024-01-05",
+      "interval_days": 7,
+      "time": "14:00",
+      "tz": "America/New_York",
+      "status": {
+        "text": "Preparing for 1:1 meetings",
+        "emoji": "📝"
+      },
+      "duration_minutes": 60,
+      "description": "Weekly 1:1 preparation time"
+    },
+    {
+      "id": "client-check-in-biweekly",
+      "type": "every_n_days",
+      "start_date": "2024-01-08",
+      "interval_days": 14,
+      "time": "11:00",
+      "tz": "America/New_York",
+      "status": {
+        "text": "Client check-in calls",
+        "emoji": "📞"
+      },
+      "duration_minutes": 120,
+      "description": "Biweekly client check-ins"
+    },
+    {
+      "id": "planning-monthly",
+      "type": "every_n_days",
+      "start_date": "2024-01-15",
+      "interval_days": 30,
+      "time": "13:00",
+      "tz": "America/New_York",
+      "status": {
+        "text": "Monthly planning session",
+        "emoji": "📅"
+      },
+      "duration_minutes": 180,
+      "description": "Monthly strategic planning"
+    },
+    {
+      "id": "code-review-day",
+      "type": "every_n_days",
+      "start_date": "2024-01-03",
+      "interval_days": 5,
+      "time": "15:30",
+      "tz": "America/New_York",
+      "status": {
+        "text": "Code review time",
+        "emoji": "🔍"
+      },
+      "duration_minutes": 90,
+      "description": "Dedicated code review every 5 days"
+    }
+  ],
+  "options": {
+    "clear_on_manual_change": false,
+    "default_status_on_clear": {
+      "text": "Available",
+      "emoji": "✅"
+    }
+  }
+}

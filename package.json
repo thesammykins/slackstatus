@@ -1,0 +1,67 @@
+{
+  "name": "slack-status-scheduler",
+  "version": "1.0.0",
+  "description": "A macOS menu bar app and Node.js runner for scheduling Slack status updates",
+  "main": "src/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js",
+    "cli": "node cli/index.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/ cli/ tests/",
+    "lint:fix": "eslint src/ cli/ tests/ --fix",
+    "format": "prettier --write src/ cli/ tests/ docs/",
+    "format:check": "prettier --check src/ cli/ tests/ docs/",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "slack",
+    "status",
+    "scheduler",
+    "macos",
+    "automation",
+    "timezone"
+  ],
+  "author": "Sammy <sammy@example.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@slack/web-api": "^7.6.0",
+    "luxon": "^3.4.4",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "prettier": "^3.1.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "bin": {
+    "slack-status-cli": "./cli/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/slack-status-scheduler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/slack-status-scheduler/issues"
+  },
+  "homepage": "https://github.com/your-username/slack-status-scheduler#readme"
+}
