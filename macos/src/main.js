@@ -43,6 +43,7 @@ function createMenuBar() {
     tooltip: 'Slack Status Scheduler',
     preloadWindow: true,
     showDockIcon: false,
+    showOnRightClick: false,
     browserWindow: {
       width: 400,
       height: 600,
@@ -59,8 +60,78 @@ function createMenuBar() {
   mb.on('ready', () => {
     console.log('Menu bar app is ready');
 
-    // Set up the context menu for the tray icon
-    setupTrayMenu();
+    // Set up proper click handling - left click shows window, right click shows context menu
+    if (mb.tray) {
+      // Create context menu but don't set it (this prevents interference with click events)
+      const contextMenu = Menu.buildFromTemplate([
+        {
+          label: 'Open Slack Status Scheduler',
+          click: () => {
+            mb.showWindow();
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Settings',
+          click: () => {
+            mb.showWindow();
+            mb.window.webContents.send('navigate-to', 'settings');
+          },
+        },
+        {
+          label: 'Schedule Editor',
+          click: () => {
+            mb.showWindow();
+            mb.window.webContents.send('navigate-to', 'schedule');
+          },
+        },
+        {
+          label: 'Preview',
+          click: () => {
+            mb.showWindow();
+            mb.window.webContents.send('navigate-to', 'preview');
+          },
+        },
+        {
+          label: 'Logs',
+          click: () => {
+            mb.showWindow();
+            mb.window.webContents.send('navigate-to', 'logs');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Export to GitHub Actions',
+          click: () => {
+            exportToGitHubActions();
+          },
+        },
+        {
+          label: 'Export to Cloudflare Worker',
+          click: () => {
+            exportToCloudflareWorker();
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'About',
+          click: () => {
+            showAbout();
+          },
+        },
+        {
+          label: 'Quit',
+          click: () => {
+            app.quit();
+          },
+        },
+      ]);
+
+      // Handle right-click manually to show context menu
+      mb.tray.on('right-click', () => {
+        mb.tray.popUpContextMenu(contextMenu);
+      });
+    }
 
     // Log the icon paths for debugging
     console.log('Menu bar icon path:', iconPath);
@@ -85,78 +156,7 @@ function createMenuBar() {
   return mb;
 }
 
-/**
- * Setup tray context menu
- */
-function setupTrayMenu() {
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Open Slack Status Scheduler',
-      click: () => {
-        mb.showWindow();
-      },
-    },
-    { type: 'separator' },
-    {
-      label: 'Settings',
-      click: () => {
-        mb.showWindow();
-        mb.window.webContents.send('navigate-to', 'settings');
-      },
-    },
-    {
-      label: 'Schedule Editor',
-      click: () => {
-        mb.showWindow();
-        mb.window.webContents.send('navigate-to', 'schedule');
-      },
-    },
-    {
-      label: 'Preview',
-      click: () => {
-        mb.showWindow();
-        mb.window.webContents.send('navigate-to', 'preview');
-      },
-    },
-    {
-      label: 'Logs',
-      click: () => {
-        mb.showWindow();
-        mb.window.webContents.send('navigate-to', 'logs');
-      },
-    },
-    { type: 'separator' },
-    {
-      label: 'Export to GitHub Actions',
-      click: () => {
-        exportToGitHubActions();
-      },
-    },
-    {
-      label: 'Export to Cloudflare Worker',
-      click: () => {
-        exportToCloudflareWorker();
-      },
-    },
-    { type: 'separator' },
-    {
-      label: 'About',
-      click: () => {
-        showAbout();
-      },
-    },
-    {
-      label: 'Quit',
-      click: () => {
-        app.quit();
-      },
-    },
-  ]);
 
-  if (mb.tray) {
-    mb.tray.setContextMenu(contextMenu);
-  }
-}
 
 /**
  * Position the window correctly relative to the tray icon
@@ -384,7 +384,7 @@ async function exportToGitHubActions(scheduleData = null) {
   try {
     const templatePath = path.join(
       __dirname,
-      '../../exports/github-actions/slack-status-scheduler.yml'
+      '../../exports/github-actions/slack-status-scheduler.yml',
     );
     const template = await fs.readFile(templatePath, 'utf8');
 
@@ -394,7 +394,7 @@ async function exportToGitHubActions(scheduleData = null) {
       // Replace placeholder with actual schedule data
       workflowContent = workflowContent.replace(
         '# SCHEDULE_PLACEHOLDER',
-        `# Schedule: ${JSON.stringify(scheduleData, null, 2)}`
+        `# Schedule: ${JSON.stringify(scheduleData, null, 2)}`,
       );
     }
 
@@ -433,7 +433,7 @@ async function exportToCloudflareWorker(scheduleData = null) {
       // Replace placeholder with actual schedule data
       workerContent = workerContent.replace(
         '// SCHEDULE_PLACEHOLDER',
-        `const SCHEDULE = ${JSON.stringify(scheduleData, null, 2)};`
+        `const SCHEDULE = ${JSON.stringify(scheduleData, null, 2)};`,
       );
     }
 

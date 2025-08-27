@@ -21,7 +21,8 @@
     "validate:verbose": "node validate-build.js --verbose",
     "lint": "echo \"Linting would go here\"",
     "clean": "rm -rf dist/ node_modules/.cache/ assets/icon.icns",
-    "dev:verbose": "DEBUG=* electron . --dev"
+    "dev:verbose": "DEBUG=* electron . --dev",
+    "test-build": "node test-build.js"
   },
   "keywords": [
     "slack",
@@ -50,6 +51,7 @@
     },
     "files": [
       "src/**/*",
+      "ui/**/*",
       "assets/**/*",
       "node_modules/**/*",
       "package.json",
