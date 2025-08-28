@@ -8,7 +8,7 @@
     "dev": "electron . --dev",
     "test-app": "electron . --test",
     "build-icons": "node scripts/build-icons.js",
-    "copy-scheduler": "mkdir -p scheduler && cp -r ../src/* scheduler/ && echo '{\"type\": \"module\"}' > scheduler/package.json",
+    "copy-scheduler": "mkdir -p scheduler && cp -r ../src/* scheduler/ && node scripts/create-scheduler-package.js",
     "prebuild": "npm run build-icons && npm run copy-scheduler",
     "build": "npm run prebuild && electron-builder",
     "build:mac": "npm run prebuild && electron-builder --mac",
@@ -60,15 +60,6 @@
       "node_modules/**/*",
       "package.json",
       "assets/icon.icns"
-    ],
-    "extraFiles": [
-      {
-        "from": "../src",
-        "to": "scheduler",
-        "filter": [
-          "**/*"
-        ]
-      }
     ],
     "mac": {
       "category": "public.app-category.productivity",
