@@ -20,6 +20,57 @@ const ACCOUNT_NAME = 'slack-token';
 // Check if running in development
 const isDev = process.argv.includes('--dev') || process.env.NODE_ENV === 'development';
 
+console.log('Starting Slack Status Scheduler...');
+console.log('Development mode:', isDev);
+console.log('Arguments:', process.argv);
+
+/**
+ * Get the path to the scheduler module
+ */
+function getSchedulerPath() {
+  // Handle different contexts: development vs packaged app
+  const appPath = app.getAppPath();
+  const isDev = process.argv.includes('--dev') || process.env.NODE_ENV === 'development';
+
+  if (isDev) {
+    // In development, use relative path from macos directory
+    const devPath = path.resolve(process.cwd(), '../src/index.js');
+    console.log('Development mode - scheduler path:', devPath);
+    return devPath;
+  } else {
+    // In packaged app, try multiple possible locations
+    const possiblePaths = [];
+
+    // First try: resources directory (most common for packaged apps)
+    if (process.resourcesPath) {
+      possiblePaths.push(path.join(process.resourcesPath, 'scheduler', 'index.js'));
+    }
+
+    // Second try: alongside app.asar
+    possiblePaths.push(path.join(path.dirname(appPath), 'scheduler', 'index.js'));
+
+    // Third try: within app directory
+    possiblePaths.push(path.join(appPath, 'scheduler', 'index.js'));
+
+    // Fourth try: local copy in macos directory
+    possiblePaths.push(path.join(__dirname, '..', 'scheduler', 'index.js'));
+
+    for (const schedulerPath of possiblePaths) {
+      console.log('Checking scheduler path:', schedulerPath);
+      if (fsSync.existsSync(schedulerPath)) {
+        console.log('Found scheduler at:', schedulerPath);
+        return schedulerPath;
+      }
+    }
+
+    // If none found, return the most likely path for debugging
+    const fallbackPath = possiblePaths[0];
+    console.warn('Scheduler not found at any expected location. Using fallback:', fallbackPath);
+    console.warn('Checked paths:', possiblePaths);
+    return fallbackPath;
+  }
+}
+
 /**
  * Initialize the menu bar app
  */
@@ -54,11 +105,17 @@ function createMenuBar() {
         contextIsolation: false,
         enableRemoteModule: true,
       },
+      ...(isDev && { webSecurity: false }),
     },
   });
 
   mb.on('ready', () => {
     console.log('Menu bar app is ready');
+
+    // Open DevTools in development mode
+    if (isDev && mb.window) {
+      mb.window.webContents.openDevTools({ mode: 'detach' });
+    }
 
     // Set up proper click handling - left click shows window, right click shows context menu
     if (mb.tray) {
@@ -113,6 +170,19 @@ function createMenuBar() {
           },
         },
         { type: 'separator' },
+        ...(isDev
+          ? [
+              {
+                label: 'Toggle Developer Tools',
+                click: () => {
+                  if (mb.window) {
+                    mb.window.webContents.toggleDevTools();
+                  }
+                },
+              },
+              { type: 'separator' },
+            ]
+          : []),
         {
           label: 'About',
           click: () => {
@@ -142,6 +212,26 @@ function createMenuBar() {
 
   mb.on('after-create-window', () => {
     console.log('Menu bar window created');
+
+    // Also try opening DevTools here in case the ready event doesn't work
+    if (isDev && mb.window) {
+      setTimeout(() => {
+        mb.window.webContents.openDevTools({ mode: 'detach' });
+      }, 1000);
+    }
+
+    // Add keyboard shortcut for DevTools
+    if (mb.window) {
+      mb.window.webContents.on('before-input-event', (event, input) => {
+        if (
+          input.key === 'F12' ||
+          (input.control && input.shift && input.key === 'I') ||
+          (input.meta && input.alt && input.key === 'I')
+        ) {
+          mb.window.webContents.toggleDevTools();
+        }
+      });
+    }
   });
 
   mb.on('show', () => {
@@ -155,8 +245,6 @@ function createMenuBar() {
 
   return mb;
 }
-
-
 
 /**
  * Position the window correctly relative to the tray icon
@@ -263,33 +351,41 @@ function setupIPC() {
   // Scheduler operations
   ipcMain.handle('scheduler-run', async (event, scheduleData, dryRun = false) => {
     try {
-      // For now, return a mock result since we need to integrate the ES module
-      // TODO: Properly integrate with the parent project's scheduler
       console.log('Scheduler run requested:', { dryRun, scheduleData });
 
-      if (dryRun) {
-        return {
-          success: true,
-          result: {
-            action: 'update_status',
-            status: { text: 'Focus time', emoji: '🧠' },
-            dryRun: true,
-          },
-        };
+      // Dynamic import of the ES module scheduler
+      const schedulerPath = getSchedulerPath();
+      console.log('Attempting to import scheduler from:', schedulerPath);
+
+      if (!fsSync.existsSync(schedulerPath)) {
+        throw new Error(`Scheduler module not found at: ${schedulerPath}`);
       }
 
+      const { SlackStatusScheduler } = await import(`file://${schedulerPath}`);
+
       // Get token from keychain for real runs
-      const tokenResult = await keytar.getPassword(SERVICE_NAME, ACCOUNT_NAME);
-      if (!tokenResult) {
-        return { success: false, error: 'No Slack token found. Please set token in settings.' };
+      let token = null;
+      if (!dryRun) {
+        token = await keytar.getPassword(SERVICE_NAME, ACCOUNT_NAME);
+        if (!token) {
+          return { success: false, error: 'No Slack token found. Please set token in settings.' };
+        }
       }
+
+      // Create and initialize scheduler
+      const scheduler = new SlackStatusScheduler({
+        dryRun: dryRun,
+        logLevel: 'info',
+      });
+
+      await scheduler.initialize(scheduleData, token);
+
+      // Run the scheduler
+      const result = await scheduler.run();
 
       return {
         success: true,
-        result: {
-          action: 'update_status',
-          status: { text: 'Focus time', emoji: '🧠' },
-        },
+        result: result,
       };
     } catch (error) {
       console.error('Scheduler run failed:', error);
@@ -299,16 +395,32 @@ function setupIPC() {
 
   ipcMain.handle('scheduler-preview', async (event, scheduleData, targetDate = null) => {
     try {
-      // Mock preview result
       console.log('Scheduler preview requested:', { scheduleData, targetDate });
+
+      // Dynamic import of the ES module scheduler
+      const schedulerPath = getSchedulerPath();
+      console.log('Attempting to import scheduler from:', schedulerPath);
+
+      if (!fsSync.existsSync(schedulerPath)) {
+        throw new Error(`Scheduler module not found at: ${schedulerPath}`);
+      }
+
+      const { SlackStatusScheduler } = await import(`file://${schedulerPath}`);
+
+      // Create and initialize scheduler in dry-run mode
+      const scheduler = new SlackStatusScheduler({
+        dryRun: true,
+        logLevel: 'info',
+      });
+
+      await scheduler.initialize(scheduleData);
+
+      // Run preview
+      const result = await scheduler.preview(targetDate);
 
       return {
         success: true,
-        result: {
-          action: 'update_status',
-          status: { text: 'Focus time', emoji: '🧠' },
-          preview: true,
-        },
+        result: result,
       };
     } catch (error) {
       console.error('Scheduler preview failed:', error);
@@ -318,23 +430,28 @@ function setupIPC() {
 
   ipcMain.handle('scheduler-upcoming', async (event, scheduleData, days = 7) => {
     try {
-      // Mock upcoming changes
       console.log('Upcoming changes requested:', { scheduleData, days });
 
-      const upcoming = [];
-      const today = new Date();
+      // Dynamic import of the ES module scheduler
+      const schedulerPath = getSchedulerPath();
+      console.log('Attempting to import scheduler from:', schedulerPath);
 
-      for (let i = 0; i < Math.min(days, 5); i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() + i);
-
-        upcoming.push({
-          date: date.toISOString().split('T')[0],
-          time: '09:00',
-          executeAt: date.toISOString(),
-          status: { text: 'Focus time', emoji: '🧠' },
-        });
+      if (!fsSync.existsSync(schedulerPath)) {
+        throw new Error(`Scheduler module not found at: ${schedulerPath}`);
       }
+
+      const { SlackStatusScheduler } = await import(`file://${schedulerPath}`);
+
+      // Create and initialize scheduler
+      const scheduler = new SlackStatusScheduler({
+        dryRun: true,
+        logLevel: 'info',
+      });
+
+      await scheduler.initialize(scheduleData);
+
+      // Get upcoming changes
+      const upcoming = scheduler.getUpcomingChanges(days);
 
       return { success: true, upcoming };
     } catch (error) {
@@ -360,6 +477,33 @@ function setupIPC() {
     } catch (error) {
       return { success: false, error: error.message };
     }
+  });
+
+  // Debug path resolution
+  ipcMain.handle('debug-paths', () => {
+    const appPath = app.getAppPath();
+    const paths = {
+      __dirname: __dirname,
+      'process.cwd()': process.cwd(),
+      'app.getAppPath()': appPath,
+      schedulerPath: getSchedulerPath(),
+      exists: fsSync.existsSync(getSchedulerPath()),
+    };
+    console.log('Debug paths:', paths);
+    return paths;
+  });
+
+  // Get app data directory for storing user data
+  ipcMain.handle('get-app-data-path', () => {
+    const userDataPath = app.getPath('userData');
+    const appDataDir = path.join(userDataPath, 'SlackStatusScheduler');
+
+    // Ensure the directory exists
+    if (!fsSync.existsSync(appDataDir)) {
+      fsSync.mkdirSync(appDataDir, { recursive: true });
+    }
+
+    return appDataDir;
   });
 
   // Window controls
@@ -476,14 +620,28 @@ function showAbout() {
 setupIPC();
 
 // App event handlers
-app.whenReady().then(() => {
-  createMenuBar();
-});
+app
+  .whenReady()
+  .then(() => {
+    console.log('App ready, creating menu bar...');
+    try {
+      createMenuBar();
+    } catch (error) {
+      console.error('Failed to create menu bar:', error);
+    }
+  })
+  .catch(error => {
+    console.error('App failed to become ready:', error);
+  });
 
 app.on('window-all-closed', () => {
   // On macOS, keep the app running even when all windows are closed
   // The menu bar icon should remain active
   console.log('All windows closed, but keeping app running for menu bar');
+  // Don't quit the app on macOS
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
 app.on('before-quit', () => {

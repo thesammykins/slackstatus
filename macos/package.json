@@ -8,10 +8,11 @@
     "dev": "electron . --dev",
     "test-app": "electron . --test",
     "build-icons": "node scripts/build-icons.js",
-    "prebuild": "npm run build-icons",
-    "build": "electron-builder",
-    "build:mac": "electron-builder --mac",
-    "dist": "electron-builder --publish=never",
+    "copy-scheduler": "mkdir -p scheduler && cp -r ../src/* scheduler/ && echo '{\"type\": \"module\"}' > scheduler/package.json",
+    "prebuild": "npm run build-icons && npm run copy-scheduler",
+    "build": "npm run prebuild && electron-builder",
+    "build:mac": "npm run prebuild && electron-builder --mac",
+    "dist": "npm run prebuild && electron-builder --publish=never",
     "pack": "electron-builder --dir",
     "postinstall": "electron-builder install-app-deps",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,7 +21,7 @@
     "validate": "node validate-build.js",
     "validate:verbose": "node validate-build.js --verbose",
     "lint": "echo \"Linting would go here\"",
-    "clean": "rm -rf dist/ node_modules/.cache/ assets/icon.icns",
+    "clean": "rm -rf dist/ node_modules/.cache/ assets/icon.icns scheduler/",
     "dev:verbose": "DEBUG=* electron . --dev",
     "test-build": "node test-build.js"
   },
@@ -41,7 +42,9 @@
   },
   "dependencies": {
     "keytar": "^7.9.0",
-    "menubar": "^9.3.0"
+    "menubar": "^9.3.0",
+    "@slack/web-api": "^7.6.0",
+    "luxon": "^3.4.4"
   },
   "build": {
     "appId": "com.slackstatus.scheduler",
@@ -53,9 +56,19 @@
       "src/**/*",
       "ui/**/*",
       "assets/**/*",
+      "scheduler/**/*",
       "node_modules/**/*",
       "package.json",
       "assets/icon.icns"
+    ],
+    "extraFiles": [
+      {
+        "from": "../src",
+        "to": "scheduler",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
     "mac": {
       "category": "public.app-category.productivity",

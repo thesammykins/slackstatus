@@ -17,7 +17,8 @@ const REQUIRED_FILES = [
   '/ui/styles.css',
   '/assets/icon.icns',
   '/assets/iconTemplate.png',
-  '/assets/iconTemplate@2x.png'
+  '/assets/iconTemplate@2x.png',
+  '/scheduler/index.js',
 ];
 
 const ARCHITECTURES = ['mac', 'mac-arm64'];
@@ -25,21 +26,21 @@ const ARCHITECTURES = ['mac', 'mac-arm64'];
 function checkAsarContents(asarPath) {
   return new Promise((resolve, reject) => {
     const asar = spawn('npx', ['asar', 'list', asarPath], {
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     let output = '';
     let error = '';
 
-    asar.stdout.on('data', (data) => {
+    asar.stdout.on('data', data => {
       output += data.toString();
     });
 
-    asar.stderr.on('data', (data) => {
+    asar.stderr.on('data', data => {
       error += data.toString();
     });
 
-    asar.on('close', (code) => {
+    asar.on('close', code => {
       if (code !== 0) {
         reject(new Error(`asar list failed: ${error}`));
         return;
@@ -58,12 +59,12 @@ function testAppStart(appPath) {
     console.log(`Testing app startup: ${appPath}`);
 
     const app = spawn('open', ['-W', '-n', appPath], {
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     let error = '';
 
-    app.stderr.on('data', (data) => {
+    app.stderr.on('data', data => {
       error += data.toString();
     });
 
@@ -73,7 +74,7 @@ function testAppStart(appPath) {
       resolve({ success: true, message: 'App started successfully' });
     }, 5000);
 
-    app.on('close', (code) => {
+    app.on('close', code => {
       clearTimeout(timeout);
       if (code === 0) {
         resolve({ success: true, message: 'App started and closed cleanly' });
@@ -82,7 +83,7 @@ function testAppStart(appPath) {
       }
     });
 
-    app.on('error', (err) => {
+    app.on('error', err => {
       clearTimeout(timeout);
       reject(err);
     });
@@ -118,9 +119,7 @@ async function validateBuild() {
       const files = await checkAsarContents(asarPath);
       console.log(`📄 Found ${files.length} files in bundle`);
 
-      const missingFiles = REQUIRED_FILES.filter(requiredFile =>
-        !files.includes(requiredFile)
-      );
+      const missingFiles = REQUIRED_FILES.filter(requiredFile => !files.includes(requiredFile));
 
       if (missingFiles.length > 0) {
         console.error(`❌ Missing required files in ${arch}:`);
@@ -139,6 +138,23 @@ async function validateBuild() {
         totalIssues++;
       }
 
+      // Check scheduler files specifically
+      const schedulerFiles = files.filter(file => file.startsWith('/scheduler/'));
+      if (schedulerFiles.length > 0) {
+        const schedulerDirs = [
+          ...new Set(schedulerFiles.map(f => f.split('/')[2]).filter(Boolean)),
+        ];
+        console.log(
+          `✅ Scheduler files bundled: ${schedulerFiles.slice(0, 3).join(', ')}${schedulerFiles.length > 3 ? '...' : ''}`,
+        );
+        if (schedulerDirs.length > 0) {
+          console.log(`✅ Scheduler subdirectories: ${schedulerDirs.join(', ')}`);
+        }
+      } else {
+        console.error('❌ Scheduler files missing from bundle');
+        totalIssues++;
+      }
+
       // Test app startup (optional, can be flaky in CI)
       if (process.env.TEST_APP_START !== 'false') {
         try {
@@ -149,7 +165,6 @@ async function validateBuild() {
           // Don't count this as a critical issue
         }
       }
-
     } catch (error) {
       console.error(`❌ Error checking ${arch} build:`, error.message);
       totalIssues++;
